@@ -71,18 +71,25 @@ class storage_management(QMainWindow, ui):
         self.datasets_chart_frame.setLayout(bpievbox)
         self.datasets_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-    def update_datasets_chart(self, free_space, input_info):
+    def update_datasets_chart(self, free_space, files):
         # input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
         # free_space = 500
 
         self.ds_chart.add_slice('Free', free_space, self.used_free_color['Free'])
 
         percent = 0
-        percent_step = (1-percent) / len(input_info)
-        for k in input_info:
+        percent_step = (1-percent) / len(files)
+        # for k in input_info:
+        #     percent += percent_step
+        #     self.ds_chart.add_slice(k, 
+        #                             input_info[k], 
+        #                             color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
+        #                             )
+
+        for file in files:
             percent += percent_step
-            self.ds_chart.add_slice(k, 
-                                    input_info[k], 
+            self.ds_chart.add_slice(file.name(), 
+                                    file.size().toGB(), 
                                     color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
                                     )
 

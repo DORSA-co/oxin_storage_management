@@ -25,6 +25,8 @@ from PySide6.QtCore import *
 SSD_IMAGE_PATH = '/home/reyhane/Desktop/Oxin_File_Manager/SSD'
 SSD_DS_PATH = '/'
 HDD_PATH = '/home/reyhane/Desktop/Oxin_File_Manager/HDD'
+
+
 UP_TH = 15
 DOWN_TH = 10
 
@@ -70,19 +72,21 @@ class API():
             # total+= size.toGB()
 
         free = self.ssd_ds_file_manager.free.toGB()
-        self.ui.update_datasets_chart(free, input_info)
+        self.ui.update_datasets_chart(free, files)
 
     def check_disks(self):
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
         if ssd_image_percent > UP_TH:
             clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (UP_TH - DOWN_TH) / 100
-            free_hdd = self.hdd_file_manager.free.toBytes()
+            
 
             self.ssd_sheet_should_clean, ssd_flag, ssd_space_needed = self.fm.scan.scan_size_limit(SSD_IMAGE_PATH,
                                                                     FileManager.Space(clean_space_ssd),
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
+
+            free_hdd = self.hdd_file_manager.free.toBytes()
 
             if ssd_space_needed.toBytes() > free_hdd:
                 self.hdd_sheet_should_clean, hdd_flag, hdd_space_needed = self.fm.scan.scan_size_limit(HDD_PATH,

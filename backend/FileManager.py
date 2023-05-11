@@ -128,15 +128,25 @@ class File:
 #____________________________________________________________________________________________________________________________________
 class FileAction:
     @staticmethod
-    def move(path,  res_path):
+    def move(origin_path,  res_path, replace_path):
+        if replace_path:
+            origin_path = os.path.realpath(origin_path)
+            replace_path = os.path.realpath(replace_path)
+            res_path = os.path.realpath(res_path)
+            res_path = origin_path.replace( replace_path, res_path) 
         Manager.build_dir(res_path)
-        shutil.move(path, res_path)
+        shutil.move(origin_path, res_path)
         
 
     @staticmethod
-    def copy(path, res_path):
+    def copy(origin_path, res_path, replace_path=None):
+        if replace_path:
+            origin_path = os.path.realpath(origin_path)
+            replace_path = os.path.realpath(replace_path)
+            res_path = os.path.realpath(res_path)
+            res_path = origin_path.replace( replace_path, res_path) 
         Manager.build_dir(res_path)
-        shutil.copy(path, res_path)
+        shutil.copy(origin_path, res_path)
         
 
     @staticmethod
@@ -150,7 +160,6 @@ class FileAction:
 #
 #
 #____________________________________________________________________________________________________________________________________
-
     
 
 #____________________________________________________________________________________________________________________________________
