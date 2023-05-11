@@ -173,8 +173,8 @@ class SmartChart(QtCharts.QChart):
 
     def add_slice_inner(self, name, value, color):
         # inner
-        # inner_color = self.__get_secondary_color(color)
-        inner_color = color
+        inner_color = self.__get_secondary_color(color)
+        # inner_color = color
         inner_slice = QtCharts.QPieSlice(name, value)
         self.__inner.append(inner_slice)
         inner_slice.setColor(inner_color)
@@ -242,7 +242,7 @@ class SmartChart(QtCharts.QChart):
         """
         from backend import color
 
-        new_color = color.ColorRGB.from_hex(hexcode).blend().hexcode
+        new_color = color.ColorRGB.from_hex(hexcode).blend(percent=0.3).hexcode
         return QtGui.QColor(new_color)
 
 

@@ -73,7 +73,6 @@ class storage_management(QMainWindow, ui):
     def update_datasets_chart(self):
         total = 1500
         input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
-        ds_colors = {'ds1':'#a0fc52', 'ds2': '#9b5370', 'ds3': '#675f3b', 'ds4':'#3cf893'}
         free_space = total - sum(input_info.values())
 
         self.ds_chart.add_slice('Free', free_space, self.used_free_color['Free'])
@@ -111,7 +110,8 @@ class storage_management(QMainWindow, ui):
 
         self.main_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_1))
         self.report_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_2))
-        self.settings_button.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_3))
+        self.settings_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_3))
+        self.stackedWidget.currentChanged.connect(self.change_left_btns)
 
     def minimize(self):
         self.showMinimized()
@@ -131,6 +131,20 @@ class storage_management(QMainWindow, ui):
         center_loc = screen.geometry().center()
         frame_geo.moveCenter(center_loc)
         self.move(frame_geo.topLeft())
+
+    def change_left_btns(self, index):
+        if index==0:
+            self.main_page_btn.setStyleSheet('background-color: rgb(90, 83, 145);')
+            self.report_page_btn.setStyleSheet('')
+            self.settings_btn.setStyleSheet('')
+        elif index==1:
+            self.main_page_btn.setStyleSheet('')
+            self.report_page_btn.setStyleSheet('background-color: rgb(90, 83, 145);')
+            self.settings_btn.setStyleSheet('')
+        elif index==2:
+            self.main_page_btn.setStyleSheet('')
+            self.report_page_btn.setStyleSheet('')
+            self.settings_btn.setStyleSheet('background-color: rgb(90, 83, 145);')
     
     def set_warning(self, text, level=1):
         """Show warning with time delay 2 second , all labels for show warning has been set here"""
