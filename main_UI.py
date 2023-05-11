@@ -7,6 +7,7 @@ from PySide6.QtUiTools import loadUiType
 import os
 from backend import texts, color
 from backend.chart_funcs import SimpleChart, SmartChart, SimpleChartView
+from api import API
 
 ui, _ = loadUiType("UI/main.ui")
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
@@ -33,10 +34,10 @@ class storage_management(QMainWindow, ui):
         self.used_free_color = {'Used': '#ff0000', 'Free': '#4dbf4d'}
 
         self.create_images_charts()
-        self.update_images_chart()
+        # self.update_images_chart()
 
         self.create_datasets_charts()
-        self.update_datasets_chart()
+        # self.update_datasets_chart()
 
     def create_images_charts(self):
         self.image_chart = SmartChart(title="Images")
@@ -49,8 +50,8 @@ class storage_management(QMainWindow, ui):
         self.images_chart_frame.setLayout(bpievbox)
         self.images_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-    def update_images_chart(self):
-        input_info = {'SSD': {'Used':100, 'Free': 200}, 'HDD': {'Used': 300, 'Free': 50}}
+    def update_images_chart(self, input_info):
+        # input_info = {'SSD': {'Used':100, 'Free': 200}, 'HDD': {'Used': 300, 'Free': 50}}
         for k in input_info:
             self.image_chart.add_slice_outer(k, sum(input_info[k].values()), self.storage_color[k])
             for kk in input_info[k]:
@@ -70,10 +71,9 @@ class storage_management(QMainWindow, ui):
         self.datasets_chart_frame.setLayout(bpievbox)
         self.datasets_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-    def update_datasets_chart(self):
-        total = 1500
-        input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
-        free_space = total - sum(input_info.values())
+    def update_datasets_chart(self, free_space, input_info):
+        # input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
+        # free_space = 500
 
         self.ds_chart.add_slice('Free', free_space, self.used_free_color['Free'])
 
@@ -174,9 +174,41 @@ class storage_management(QMainWindow, ui):
             self.message_label.setText("")
             self.message_label.setStyleSheet("")
 
+    def insert_into_table(self, files, operation, state):
+        for file in files:
+            rowPosition = self.report_table.rowCount()
+            self.report_table.insertRow(rowPosition)
+
+            table_item = QTableWidgetItem(file.name())
+            table_item.setTextAlignment(Qt.AlignCenter)
+            table_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            table_item.setCheckState(Qt.Unchecked) 
+            self.report_table.setItem(rowPosition, 0, table_item)
+
+            table_item = QTableWidgetItem(operation)
+            table_item.setTextAlignment(Qt.AlignCenter)
+            self.report_table.setItem(rowPosition, 1, table_item)
+
+            table_item = QTableWidgetItem(state)
+            table_item.setTextAlignment(Qt.AlignCenter)
+            self.report_table.setItem(rowPosition, 2, table_item)
+
+    def get_table_checked_items(self):
+        selected_file_names = []
+        for row in range(self.report_table.rowCount()): 
+            if self.report_table.item(row, 0).checkState() == Qt.Checked:
+                selected_file_names.append(self.report_table.item(row, 0).text())
+
+        return selected_file_names
+
+    def clear_table(self):
+        self.report_table.clear()
+        self.report_table.setRowCount(0)
+
 
 if __name__ == "__main__":
     app = QApplication()
     win = storage_management()
+    api = API(win)
     win.show()
     sys.exit(app.exec())

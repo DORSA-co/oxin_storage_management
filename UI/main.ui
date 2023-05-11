@@ -65,6 +65,8 @@ QTableWidget::item{
 	border-color: transparent;
 	padding-left: 5px;
 	padding-right: 5px;
+	color: white;
+	border: 1px solid rgb(58, 58, 102);
 }
 QHeaderView::section:horizontal
 {
@@ -552,7 +554,10 @@ Line {
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QTableWidget" name="tableWidget">
+             <widget class="QTableWidget" name="report_table">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <attribute name="horizontalHeaderCascadingSectionResizes">
                <bool>true</bool>
               </attribute>
@@ -570,6 +575,11 @@ Line {
               <column>
                <property name="text">
                 <string>Operation</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>State</string>
                </property>
               </column>
              </widget>
