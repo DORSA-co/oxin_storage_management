@@ -1,6 +1,7 @@
 from backend import FileManager
 import os
 from PySide6.QtCore import *
+from PySide6.QtCore import QTimer
 
 
 # def datasets_space(path):
@@ -22,11 +23,13 @@ from PySide6.QtCore import *
 # print(res)
 
 # READ FROM DB
-SSD_IMAGE_PATH = '/home/reyhane/Desktop/Oxin_File_Manager/SSD'
+SSD_IMAGE_PATH = '/home/reyhane/Desktop/oxin_file_manager/SSD'
 SSD_DS_PATH = '/'
-HDD_PATH = '/home/reyhane/Desktop/Oxin_File_Manager/HDD'
+HDD_PATH = '/home/reyhane/Desktop/oxin_file_manager/HDD'
 UP_TH = 15
 DOWN_TH = 10
+CHART_UPDATE_TIME = 15
+DISKS_CHECK_TIME = 60
 
 class API():
     def __init__(self, ui):
@@ -39,13 +42,27 @@ class API():
         ############################## CHANGE ###############################
         self.hdd_file_manager.free = FileManager.Space(500*1024*1024) 
 
-        self.disks = {'SSD_DS': self.ssd_ds_file_manager, 'SSD_IMAGE': self.ssd_image_file_manager, 'HDD': self.hdd_file_manager}
-
-        self.update_images_chart()
-        self.update_datasets_chart()
+        self.update_charts()
         self.check_disks()
 
+        self.create_charts_timer()
+        self.create_disks_timer()
+
         self.ui.start_btn.clicked.connect(self.start_cleaning)
+
+    def create_charts_timer(self):
+        self.update_charts_timer = QTimer()
+        self.update_charts_timer.timeout.connect(self.update_charts)
+        self.update_charts_timer.start(CHART_UPDATE_TIME*60*1000)
+
+    def create_disks_timer(self):
+        self.check_disks_timer = QTimer()
+        self.check_disks_timer.timeout.connect(self.check_disks)
+        self.check_disks_timer.start(DISKS_CHECK_TIME*60*1000)
+
+    def update_charts(self):
+        self.update_images_chart()
+        self.update_datasets_chart()
 
     def update_images_chart(self):
         input_info = {'SSD': {'Used':self.ssd_image_file_manager.used.toGB(), 
@@ -53,24 +70,15 @@ class API():
                     'HDD': {'Used':self.hdd_file_manager.used.toGB(), 
                             'Free': self.hdd_file_manager.free.toGB()}
                     }
+        self.ui.clear_images_chart()
         self.ui.update_images_chart(input_info)
 
     def update_datasets_chart(self):
-        
-
-        #-----------------DataSet
-        input_info = {}
         path = '/home/reyhane/Desktop/default_dataset'
         files = self.fm.scan.scan_by_depth(path, 0)
-        # total = 0
-        for f in files:
-            name = f.name()
-            size = f.size()
-            input_info[name] = size.toGB()
-            # total+= size.toGB()
-
         free = self.ssd_ds_file_manager.free.toGB()
-        self.ui.update_datasets_chart(free, input_info)
+        self.ui.clear_datasets_chart()
+        self.ui.update_datasets_chart(free, files)
 
     def check_disks(self):
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
@@ -101,10 +109,6 @@ class API():
             if file.name() in selected_file_names:
                 FileManager.FileManager.action.move(file.path(), res_path=HDD_PATH)
 
-
-        # for sheet_file in sheet_should_copy:
-    #     print(sheet_file.path, sheet_file.size().toMB())
-    #     #FileManager.action.move(sheet_file.path, res_path)
         
         
 
