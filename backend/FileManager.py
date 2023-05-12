@@ -128,25 +128,30 @@ class File:
 #____________________________________________________________________________________________________________________________________
 class FileAction:
     @staticmethod
+    #if set replace_path, res_path replace with replace_path in origin_path
     def move(origin_path,  res_path, replace_path):
         if replace_path:
-            origin_path = os.path.realpath(origin_path)
-            replace_path = os.path.realpath(replace_path)
-            res_path = os.path.realpath(res_path)
-            res_path = origin_path.replace( replace_path, res_path) 
+            Manager.replace_path(origin_path, old_path=replace_path, new_path=res_path)
+            # origin_path = os.path.realpath(origin_path)
+            # replace_path = os.path.realpath(replace_path)
+            # res_path = os.path.realpath(res_path)
+            # res_path = origin_path.replace( replace_path, res_path) 
         Manager.build_dir(res_path)
         shutil.move(origin_path, res_path)
+        return res_path
         
 
     @staticmethod
     def copy(origin_path, res_path, replace_path=None):
         if replace_path:
-            origin_path = os.path.realpath(origin_path)
-            replace_path = os.path.realpath(replace_path)
-            res_path = os.path.realpath(res_path)
-            res_path = origin_path.replace( replace_path, res_path) 
+            Manager.replace_path(origin_path, old_path=replace_path, new_path=res_path)
+            # origin_path = os.path.realpath(origin_path)
+            # replace_path = os.path.realpath(replace_path)
+            # res_path = os.path.realpath(res_path)
+            # res_path = origin_path.replace( replace_path, res_path) 
         Manager.build_dir(res_path)
         shutil.copy(origin_path, res_path)
+        return res_path
         
 
     @staticmethod
@@ -156,16 +161,25 @@ class FileAction:
         else:
             os.remove(path)
 
-#____________________________________________________________________________________________________________________________________
-#
-#
-#____________________________________________________________________________________________________________________________________
-    
+    @staticmethod
+    def shortcut_linux(source_path, destination_path):
+        #remove file to prevent duplicate
+        if os.path.exists(destination_path):
+            FileAction.delete(destination_path)
 
+        Manager.build_dir(destination_path)
+
+
+        # create absolute path of source path
+        source_absPath = os.path.abspath(source_path)
+        if os.path.isdir(source_path):
+            source_absPath = source_absPath + '\\*'
+        os.system('ln -s ' + source_absPath + ' ' + destination_path)
 #____________________________________________________________________________________________________________________________________
 #
 #
 #____________________________________________________________________________________________________________________________________
+
 class FileSort:
     @staticmethod
     def sort_by_creationtime(li: list[File], low_to_high=False):
@@ -294,6 +308,19 @@ class Manager:
         if (not os.path.isdir(path)) and path !='' :
             os.mkdir(path)
 
+    @staticmethod
+    def replace_path(path, old_path, new_path):
+        path = os.path.realpath(path)
+        old_path = os.path.normpath(old_path)
+        new_path = os.path.normpath(new_path)
+        if old_path[:1] == '\\':
+            old_path = old_path[1:]
+        if new_path[:1] == '\\':
+            new_path = new_path[1:]
+        return path.replace(old_path, new_path)
+
+        
+
 #____________________________________________________________________________________________________________________________________
 #
 #
@@ -312,6 +339,8 @@ class FileManager:
 
                 
 if __name__ == '__main__':
+    print(Manager.replace_path('a/b/c', '\\a/b/', '\m\\'))
+    FileAction.shortcut('a', 'test')
     main_path = 'files'
     res_path = 'C:\\Users\\amir\\Desktop\\oxin-file-manager'
     transfer_size2 = Space(500*1e6)
