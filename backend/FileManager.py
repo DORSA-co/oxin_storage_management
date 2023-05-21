@@ -103,6 +103,7 @@ class File:
         self._size_ = size
         self.__extention__ = None
         self.__name__ = None
+        self.__dirpath__ = None
 
     def size(self) -> Space:
         if self._size_ is None:
@@ -113,6 +114,11 @@ class File:
         if self.__extention__ is None:
             self.__extention__ = os.path.splitext(self.__path__)[1]
         return self.__extention__
+    
+    def dirpath(self) -> str :
+        if self.__dirpath__ is None:
+            self.__dirpath__ = os.path.dirname(self.__path__)
+        return self.__dirpath__
     
     def name(self) -> str :
         if self.__name__ is None:
@@ -131,7 +137,7 @@ class FileAction:
     #if set replace_path, res_path replace with replace_path in origin_path
     def move(origin_path,  res_path, replace_path):
         if replace_path:
-            Manager.replace_path(origin_path, old_path=replace_path, new_path=res_path)
+            res_path = Manager.replace_path(os.path.dirname(origin_path), old_path=replace_path, new_path=res_path)
             # origin_path = os.path.realpath(origin_path)
             # replace_path = os.path.realpath(replace_path)
             # res_path = os.path.realpath(res_path)
@@ -144,7 +150,7 @@ class FileAction:
     @staticmethod
     def copy(origin_path, res_path, replace_path=None):
         if replace_path:
-            Manager.replace_path(origin_path, old_path=replace_path, new_path=res_path)
+            res_path = Manager.replace_path(os.path.dirname(origin_path), old_path=replace_path, new_path=res_path)
             # origin_path = os.path.realpath(origin_path)
             # replace_path = os.path.realpath(replace_path)
             # res_path = os.path.realpath(res_path)
@@ -172,10 +178,9 @@ class FileAction:
                 s_path = os.path.join(source_path, sub)
                 d_path = os.path.join(destination_path, sub)
                 FileAction.shortcut(s_path, d_path)
-        
 
     @staticmethod
-    def __shortcut_linux__(source_path, destination_path):
+    def shortcut_linux(source_path, destination_path):
         #remove file to prevent duplicate
         if os.path.exists(destination_path):
             FileAction.delete(destination_path)
@@ -186,7 +191,7 @@ class FileAction:
         # create absolute path of source path
         source_absPath = os.path.abspath(source_path)
         if os.path.isdir(source_path):
-            source_absPath = source_absPath + '\\*'
+            source_absPath = source_absPath + '/*'
         os.system('ln -s ' + source_absPath + ' ' + destination_path)
 #____________________________________________________________________________________________________________________________________
 #
@@ -363,14 +368,14 @@ if __name__ == '__main__':
     fm = FileManager()
 
     #-----------------copy older sheet
-    sheet_should_copy, flag, space_needed = fm.scan.scan_size_limit(main_path,
-                                                                    transfer_size2,
-                                                                    depth=3, 
-                                                                    sorting_func= FileManager.sort.sort_by_creationtime)
+    # sheet_should_copy, flag, space_needed = fm.scan.scan_size_limit(main_path,
+    #                                                                 transfer_size2,
+    #                                                                 depth=3, 
+    #                                                                 sorting_func= FileManager.sort.sort_by_creationtime)
 
-    for sheet_file in sheet_should_copy:
-        #print(sheet_file.path, sheet_file.size().toMB())
-        FileManager.action.shortcut(sheet_file.path, res_path)
+    # for sheet_file in sheet_should_copy:
+    #     print(sheet_file.path, sheet_file.size().toMB())
+    #     #FileManager.action.move(sheet_file.path, res_path)
 
 
 

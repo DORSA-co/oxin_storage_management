@@ -25,13 +25,9 @@ from PySide6.QtCore import QTimer
 # READ FROM DB
 SSD_IMAGE_PATH = '/home/reyhane/Desktop/oxin_file_manager/SSD'
 SSD_DS_PATH = '/'
-<<<<<<< HEAD
-HDD_PATH = '/home/reyhane/Desktop/Oxin_File_Manager/HDD'
-
-
-=======
 HDD_PATH = '/home/reyhane/Desktop/oxin_file_manager/HDD'
->>>>>>> c0633ec366a94ddc8b35df80bc9a971db79073a8
+
+
 UP_TH = 15
 DOWN_TH = 10
 CHART_UPDATE_TIME = 15
@@ -47,6 +43,9 @@ class API():
         self.hdd_file_manager = FileManager.diskMemory(path=HDD_PATH)
         ############################## CHANGE ###############################
         self.hdd_file_manager.free = FileManager.Space(500*1024*1024) 
+
+        self.ssd_sheet_should_clean = []
+        self.hdd_sheet_should_clean = []
 
         self.update_charts()
         self.check_disks()
@@ -83,16 +82,12 @@ class API():
         path = '/home/reyhane/Desktop/default_dataset'
         files = self.fm.scan.scan_by_depth(path, 0)
         free = self.ssd_ds_file_manager.free.toGB()
-<<<<<<< HEAD
-=======
-        self.ui.clear_datasets_chart()
->>>>>>> c0633ec366a94ddc8b35df80bc9a971db79073a8
         self.ui.update_datasets_chart(free, files)
 
     def check_disks(self):
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
         if ssd_image_percent > UP_TH:
-            clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (UP_TH - DOWN_TH) / 100
+            clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - DOWN_TH) / 100
             
 
             self.ssd_sheet_should_clean, ssd_flag, ssd_space_needed = self.fm.scan.scan_size_limit(SSD_IMAGE_PATH,
@@ -107,34 +102,22 @@ class API():
                 self.hdd_sheet_should_clean, hdd_flag, hdd_space_needed = self.fm.scan.scan_size_limit(HDD_PATH,
                                                                     FileManager.Space(clean_space_ssd - free_hdd),
                                                                     depth=3, 
-                                                                    sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
+                                                                    sorting_func= self.fm.sort.sort_by_creationtime)
                 self.ui.insert_into_table(self.hdd_sheet_should_clean, 'Delete', '-')
             
     def start_cleaning(self):
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
-                FileManager.FileManager.action.delete(file.path())
+                self.fm.action.delete(file.path())
+
+        self.hdd_sheet_should_clean = []
 
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
-                FileManager.FileManager.action.move(file.path(), res_path=HDD_PATH)
+                path = self.fm.action.move(file.path(), res_path=HDD_PATH, replace_path=SSD_IMAGE_PATH)
+                path = os.path.join( path, file.name() )
+                print(path, file.dirpath())
+                self.fm.action.shortcut_linux(path, file.path())
 
-        
-        
-
-
-
-
-        
-
-        
-
-
-
-
-
-
-
-
-
+        self.ssd_sheet_should_clean = []

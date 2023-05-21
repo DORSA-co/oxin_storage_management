@@ -80,7 +80,6 @@ class storage_management(QMainWindow, ui):
 
         percent = 0
         percent_step = (1-percent) / len(files)
-<<<<<<< HEAD
         # for k in input_info:
         #     percent += percent_step
         #     self.ds_chart.add_slice(k, 
@@ -88,8 +87,6 @@ class storage_management(QMainWindow, ui):
         #                             color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
         #                             )
 
-=======
->>>>>>> c0633ec366a94ddc8b35df80bc9a971db79073a8
         for file in files:
             percent += percent_step
             self.ds_chart.add_slice(file.name(), 

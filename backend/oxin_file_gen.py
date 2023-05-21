@@ -13,7 +13,7 @@ def random_id():
     letters = string.ascii_letters
     num = string.digits
     a = ''.join(random.choice(letters) for i in range(2))
-    b = ''.join(random.choice(num) for i in range(5))
+    b = ''.join(random.choice(num) for i in range(2))
     sheet_id = b + a
     return sheet_id
 
@@ -21,7 +21,7 @@ def mkdir(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
-main_path = '/home/reyhane/Desktop/oxin_file_manager/HDD'
+main_path = '/home/reyhane/Desktop/oxin_file_manager/SSD'
 
 for year in np.random.randint(2012, 2023, 2):
     year = str(year)
