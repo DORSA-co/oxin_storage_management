@@ -2,47 +2,26 @@ from backend import FileManager
 import os
 from PySide6.QtCore import *
 from PySide6.QtCore import QTimer
+from backend import database_utils
 
 
-# def datasets_space(path):
-#     res = []
-#     total = 0
-#     fm = FileManager.FileManager()
-#     files = fm.scan.scan_by_depth(path, 0, extentions=[''])
-#     #-----------------DataSet
-#     for file in files:
-#         res.append({'name': file.name(), 'size': file.size() })
-#         total+= file.size().bytes
-
-#     #total = FileManager.Space(total)
-#     return res
-
-
-# main_path = 'files'
-# res = datasets_space(main_path)
-# print(res)
-
-# READ FROM DB
-SSD_IMAGE_PATH = '/home/reyhane/Desktop/oxin_file_manager/SSD'
-SSD_DS_PATH = '/'
-HDD_PATH = '/home/reyhane/Desktop/oxin_file_manager/HDD'
-
-
-UP_TH = 15
-DOWN_TH = 10
 CHART_UPDATE_TIME = 15
 DISKS_CHECK_TIME = 60
 
 class API():
     def __init__(self, ui):
         self.ui = ui
+        
+        self.db = database_utils.dataBaseUtils()
+        self.read_settings_from_db()
 
         self.fm = FileManager.FileManager()
-        self.ssd_ds_file_manager = FileManager.diskMemory(path=SSD_DS_PATH)
-        self.ssd_image_file_manager = FileManager.diskMemory(path=SSD_IMAGE_PATH)
-        self.hdd_file_manager = FileManager.diskMemory(path=HDD_PATH)
+        self.ssd_ds_file_manager = FileManager.diskMemory(path=self.settings['ssd_datasets_path'])
+        self.ssd_image_file_manager = FileManager.diskMemory(path=self.settings['ssd_images_path'])
+        self.hdd_file_manager = FileManager.diskMemory(path=self.settings['hdd_path'])
         ############################## CHANGE ###############################
-        self.hdd_file_manager.free = FileManager.Space(500*1024*1024) 
+        self.hdd_file_manager.free = FileManager.Space(500*1024*1024)
+        #####################################################################
 
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
@@ -54,6 +33,38 @@ class API():
         self.create_disks_timer()
 
         self.ui.start_btn.clicked.connect(self.start_cleaning)
+        self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
+
+    def read_settings_from_db(self):
+        res, settings = self.db.load_storage_setting()
+        if res:
+            self.settings = settings[0]
+            self.ui.set_settings(self.settings['max_cleanup_percentage'], 
+                                 self.settings['min_cleanup_percentage'],
+                                 self.settings['ssd_images_path'],
+                                 self.settings['ssd_datasets_path'],
+                                 self.settings['hdd_path'])
+
+    def apply_settings(self):
+        max_cleanup_percentage = self.ui.max_percent_spinBox.value()
+        min_cleanup_percentage = self.ui.min_percent_spinBox.value()
+        ssd_images_path = self.ui.ssd_image_path_lineEdit.text()
+        ssd_datasets_path = self.ui.ssd_ds_path_lineEdit.text()
+        hdd_path = self.ui.hdd_path_lineEdit.text()
+
+        self.db.set_storage_setting(
+            max_cleanup_percentage,
+            min_cleanup_percentage,
+            ssd_images_path,
+            ssd_datasets_path,
+            hdd_path
+        )
+
+        self.settings['max_cleanup_percentage'] = max_cleanup_percentage 
+        self.settings['min_cleanup_percentage'] = min_cleanup_percentage
+        self.settings['ssd_images_path'] = ssd_images_path
+        self.settings['ssd_datasets_path'] = ssd_datasets_path
+        self.settings['hdd_path'] = hdd_path
 
     def create_charts_timer(self):
         self.update_charts_timer = QTimer()
@@ -86,11 +97,11 @@ class API():
 
     def check_disks(self):
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
-        if ssd_image_percent > UP_TH:
-            clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - DOWN_TH) / 100
+        if ssd_image_percent > self.settings['max_cleanup_percentage']:
+            clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - self.settings['min_cleanup_percentage']) / 100
             
 
-            self.ssd_sheet_should_clean, ssd_flag, ssd_space_needed = self.fm.scan.scan_size_limit(SSD_IMAGE_PATH,
+            self.ssd_sheet_should_clean, ssd_flag, ssd_space_needed = self.fm.scan.scan_size_limit(self.settings['ssd_images_path'],
                                                                     FileManager.Space(clean_space_ssd),
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
@@ -99,7 +110,7 @@ class API():
             free_hdd = self.hdd_file_manager.free.toBytes()
 
             if ssd_space_needed.toBytes() > free_hdd:
-                self.hdd_sheet_should_clean, hdd_flag, hdd_space_needed = self.fm.scan.scan_size_limit(HDD_PATH,
+                self.hdd_sheet_should_clean, hdd_flag, hdd_space_needed = self.fm.scan.scan_size_limit(self.settings['hdd_path'],
                                                                     FileManager.Space(clean_space_ssd - free_hdd),
                                                                     depth=3, 
                                                                     sorting_func= self.fm.sort.sort_by_creationtime)
@@ -115,9 +126,9 @@ class API():
 
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
-                path = self.fm.action.move(file.path(), res_path=HDD_PATH, replace_path=SSD_IMAGE_PATH)
+                path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
                 path = os.path.join( path, file.name() )
-                print(path, file.dirpath())
-                self.fm.action.shortcut_linux(path, file.path())
+                # print(path, file.dirpath())
+                self.fm.action.shortcut(path, file.path())
 
         self.ssd_sheet_should_clean = []

@@ -1,16 +1,24 @@
 import sys
+import os
 from PySide6.QtWidgets import *
 from PySide6.QtCharts import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtUiTools import loadUiType
-import os
 from backend import texts, color
 from backend.chart_funcs import SimpleChart, SmartChart, SimpleChartView
+from backend.FileDialog import FileDialog
 from api import API
 
 ui, _ = loadUiType("UI/main.ui")
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
+
+ANIMATION_DURATION = 300
+HEIGHT_START_VALUE = 0
+HEIGHT_STOP_VALUE = 200
+ICON_MAIN_PATH = ':/icons/Icons'
+DOWN_ICON = 'down.png'
+UP_ICON = 'up.png'
 
 class storage_management(QMainWindow, ui):
     global widgets
@@ -80,12 +88,6 @@ class storage_management(QMainWindow, ui):
 
         percent = 0
         percent_step = (1-percent) / len(files)
-        # for k in input_info:
-        #     percent += percent_step
-        #     self.ds_chart.add_slice(k, 
-        #                             input_info[k], 
-        #                             color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
-        #                             )
 
         for file in files:
             percent += percent_step
@@ -93,9 +95,6 @@ class storage_management(QMainWindow, ui):
                                     file.size().toGB(), 
                                     color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
                                     )
-
-        # self.image_chart.set_legend_outer(labels=input_info.keys())
-        # self.image_chart.set_legend_inner(labels=list(input_info.values())[0].keys())
 
     def clear_datasets_chart(self):
         self.ds_chart.clear()
@@ -119,10 +118,14 @@ class storage_management(QMainWindow, ui):
         self.mini_button.clicked.connect(self.minimize)
         self.maxi_button.clicked.connect(self.maxmize_minimize)
 
-        self.main_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_1))
-        self.report_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_2))
-        self.settings_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_3))
+        self.main_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.main_page))
+        self.report_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.report_page))
+        self.settings_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.settings_page))
         self.stackedWidget.currentChanged.connect(self.change_left_btns)
+        self.advance_settings_btn.clicked.connect(self.show_hide_advance_settings)
+        self.ssd_image_path_btn.clicked.connect(lambda: self.browse(self.ssd_image_path_lineEdit))
+        self.ssd_ds_path_btn.clicked.connect(lambda: self.browse(self.ssd_ds_path_lineEdit))
+        self.hdd_path_btn.clicked.connect(lambda: self.browse(self.hdd_path_lineEdit))
 
     def minimize(self):
         self.showMinimized()
@@ -216,6 +219,71 @@ class storage_management(QMainWindow, ui):
         self.report_table.clear()
         self.report_table.setRowCount(0)
 
+    def show_hide_advance_settings(self):
+        h = self.advance_frame.height()
+
+        if h <= HEIGHT_START_VALUE:
+            self.minHeight = QPropertyAnimation(self.advance_frame, b"minimumHeight")
+            self.minHeight.setDuration(ANIMATION_DURATION)
+            self.minHeight.setStartValue(h)
+            self.minHeight.setEndValue(HEIGHT_STOP_VALUE)
+            self.minHeight.setEasingCurve(QEasingCurve.InOutQuart)
+            self.group = QParallelAnimationGroup()
+            self.group.addAnimation(self.minHeight)
+
+            self.maxHeight = QPropertyAnimation(self.advance_frame, b"maximumHeight")
+            self.maxHeight.setDuration(ANIMATION_DURATION)
+            self.maxHeight.setStartValue(h)
+            self.maxHeight.setEndValue(HEIGHT_STOP_VALUE)
+            self.maxHeight.setEasingCurve(QEasingCurve.InOutQuart)
+            self.group.addAnimation(self.maxHeight)
+            self.group.start()
+
+            self.set_icon(self.advance_settings_btn, UP_ICON)
+
+        else:
+            self.minHeight = QPropertyAnimation(self.advance_frame, b"minimumHeight")
+            self.minHeight.setDuration(ANIMATION_DURATION)
+            self.minHeight.setStartValue(h)
+            self.minHeight.setEndValue(HEIGHT_START_VALUE)
+            self.minHeight.setEasingCurve(QEasingCurve.InOutQuart)
+            self.group = QParallelAnimationGroup()
+            self.group.addAnimation(self.minHeight)
+
+            self.maxHeight = QPropertyAnimation(self.advance_frame, b"maximumHeight")
+            self.maxHeight.setDuration(ANIMATION_DURATION)
+            self.maxHeight.setStartValue(h)
+            self.maxHeight.setEndValue(HEIGHT_START_VALUE)
+            self.maxHeight.setEasingCurve(QEasingCurve.InOutQuart)
+            self.group.addAnimation(self.maxHeight)
+            self.group.start()
+
+            self.set_icon(self.advance_settings_btn, DOWN_ICON)
+
+    def set_icon(self, obj, icon_name):
+        icon_path = os.path.join(ICON_MAIN_PATH, icon_name)
+        obj.setIcon(QPixmap(icon_path))
+
+    def set_settings(self, max_cleanup_percentage, min_cleanup_percentage, ssd_images_path, ssd_datasets_path, hdd_path):
+        self.max_percent_spinBox.setValue(int(max_cleanup_percentage))
+        self.min_percent_spinBox.setValue(int(min_cleanup_percentage))
+
+        self.ssd_image_path_lineEdit.setText(ssd_images_path)
+        self.ssd_ds_path_lineEdit.setText(ssd_datasets_path)
+        self.hdd_path_lineEdit.setText(hdd_path)
+
+    def browse(self, lineedit_obj):
+        path = self.open_file_dialog()
+        lineedit_obj.setText(path)
+
+    def open_file_dialog(self):
+        select_path_dialog = FileDialog("Select Path", "/")
+        selected = select_path_dialog.exec()
+
+        if selected:
+            dname = select_path_dialog.selectedFiles()[0]
+            return dname
+        return ''
 
 if __name__ == "__main__":
     app = QApplication()
