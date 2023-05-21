@@ -29,15 +29,13 @@ class storage_management(QMainWindow, ui):
         self.activate_()
         self.center()
         self._old_pos = None
+        self.stackedWidget.setCurrentIndex(0)
 
         self.storage_color = {'HDD': '#ff007f', 'SSD': '#55aaff'}
         self.used_free_color = {'Used': '#ff0000', 'Free': '#4dbf4d'}
 
         self.create_images_charts()
-        # self.update_images_chart()
-
         self.create_datasets_charts()
-        # self.update_datasets_chart()
 
     def create_images_charts(self):
         self.image_chart = SmartChart(title="Images")
@@ -60,6 +58,9 @@ class storage_management(QMainWindow, ui):
         self.image_chart.set_legend_outer(labels=input_info.keys())
         self.image_chart.set_legend_inner(labels=list(input_info.values())[0].keys())
 
+    def clear_images_chart(self):
+        self.image_chart.clear()
+
     def create_datasets_charts(self):
         self.ds_chart = SimpleChart(title="Datasets")
         self.ds_chart_view = SimpleChartView(self.ds_chart)
@@ -79,6 +80,7 @@ class storage_management(QMainWindow, ui):
 
         percent = 0
         percent_step = (1-percent) / len(files)
+<<<<<<< HEAD
         # for k in input_info:
         #     percent += percent_step
         #     self.ds_chart.add_slice(k, 
@@ -86,6 +88,8 @@ class storage_management(QMainWindow, ui):
         #                             color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
         #                             )
 
+=======
+>>>>>>> c0633ec366a94ddc8b35df80bc9a971db79073a8
         for file in files:
             percent += percent_step
             self.ds_chart.add_slice(file.name(), 
@@ -95,6 +99,9 @@ class storage_management(QMainWindow, ui):
 
         # self.image_chart.set_legend_outer(labels=input_info.keys())
         # self.image_chart.set_legend_inner(labels=list(input_info.values())[0].keys())
+
+    def clear_datasets_chart(self):
+        self.ds_chart.clear()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:

@@ -21,7 +21,7 @@ def mkdir(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
-main_path = '/home/reyhane/Desktop/Oxin_File_Manager/SSD'
+main_path = '/home/reyhane/Desktop/oxin_file_manager/HDD'
 
 for year in np.random.randint(2012, 2023, 2):
     year = str(year)
