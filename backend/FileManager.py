@@ -162,7 +162,20 @@ class FileAction:
             os.remove(path)
 
     @staticmethod
-    def shortcut_linux(source_path, destination_path):
+    def shortcut(source_path, destination_path):
+        if os.path.isfile(source_path):
+            FileAction.__shortcut_linux__(source_path, destination_path)
+
+        elif os.path.isdir(source_path):
+            Manager.build_dir(destination_path)
+            for sub in os.listdir(destination_path):
+                s_path = os.path.join(source_path, sub)
+                d_path = os.path.join(destination_path, sub)
+                FileAction.shortcut(s_path, d_path)
+        
+
+    @staticmethod
+    def __shortcut_linux__(source_path, destination_path):
         #remove file to prevent duplicate
         if os.path.exists(destination_path):
             FileAction.delete(destination_path)
@@ -350,14 +363,14 @@ if __name__ == '__main__':
     fm = FileManager()
 
     #-----------------copy older sheet
-    # sheet_should_copy, flag, space_needed = fm.scan.scan_size_limit(main_path,
-    #                                                                 transfer_size2,
-    #                                                                 depth=3, 
-    #                                                                 sorting_func= FileManager.sort.sort_by_creationtime)
+    sheet_should_copy, flag, space_needed = fm.scan.scan_size_limit(main_path,
+                                                                    transfer_size2,
+                                                                    depth=3, 
+                                                                    sorting_func= FileManager.sort.sort_by_creationtime)
 
-    # for sheet_file in sheet_should_copy:
-    #     print(sheet_file.path, sheet_file.size().toMB())
-    #     #FileManager.action.move(sheet_file.path, res_path)
+    for sheet_file in sheet_should_copy:
+        #print(sheet_file.path, sheet_file.size().toMB())
+        FileManager.action.shortcut(sheet_file.path, res_path)
 
 
 
