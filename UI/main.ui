@@ -1096,6 +1096,22 @@ Line {
                </item>
               </layout>
              </item>
+             <item>
+              <widget class="QLabel" name="settings_warning_label">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>

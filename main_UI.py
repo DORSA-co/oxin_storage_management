@@ -39,6 +39,8 @@ class storage_management(QMainWindow, ui):
         self._old_pos = None
         self.stackedWidget.setCurrentIndex(0)
 
+        self.language = 'en'
+
         self.storage_color = {'HDD': '#ff007f', 'SSD': '#55aaff'}
         self.used_free_color = {'Used': '#ff0000', 'Free': '#4dbf4d'}
 
@@ -86,11 +88,11 @@ class storage_management(QMainWindow, ui):
 
         self.ds_chart.add_slice('Free', free_space, self.used_free_color['Free'])
 
-        percent = 0
-        percent_step = (1-percent) / len(files)
+        percent = 1
+        percent_step = percent / len(files)
 
         for file in files:
-            percent += percent_step
+            percent -= percent_step
             self.ds_chart.add_slice(file.name(), 
                                     file.size().toGB(), 
                                     color.ColorRGB.from_hex(self.used_free_color['Used']).blend(percent=percent).hexcode
@@ -160,33 +162,50 @@ class storage_management(QMainWindow, ui):
             self.report_page_btn.setStyleSheet('')
             self.settings_btn.setStyleSheet('background-color: rgb(90, 83, 145);')
     
-    def set_warning(self, text, level=1):
+    def set_warning(self, label_obj, text, level=1):
         """Show warning with time delay 2 second , all labels for show warning has been set here"""
 
         if text != None:
             if level == 1:
-                self.message_label.setText(" " + text + " ")
-                self.message_label.setStyleSheet(
+                label_obj.setText(" " + text + " ")
+                label_obj.setStyleSheet(
                     "background-color:#20a740;border-radius:2px;color:white"
                 )
 
             if level == 2:
-                self.message_label.setText(
+                label_obj.setText(
                     texts.WARNINGS["WARNING"][self.language] + text
                 )
-                self.message_label.setStyleSheet(
+                label_obj.setStyleSheet(
                     "background-color:#FDFFA9;border-radius:2px;color:black"
                 )
 
             if level >= 3:
-                self.message_label.setText(texts.ERRORS["ERROR"][self.language] + text)
-                self.message_label.setStyleSheet(
+                label_obj.setText(texts.ERRORS["ERROR"][self.language] + text)
+                label_obj.setStyleSheet(
                     "background-color:#D9534F;border-radius:2px;color:black"
                 )
-            QTimer.singleShot(2000, lambda: self.set_warning(None))
+            QTimer.singleShot(2000, lambda: self.set_warning(label_obj, None))
         else:
-            self.message_label.setText("")
-            self.message_label.setStyleSheet("")
+            label_obj.setText("")
+            label_obj.setStyleSheet("")
+
+    def change_background_color(self, obj, level=1):
+        if not level:
+            obj.setStyleSheet("")
+        if level==1:
+            obj.setStyleSheet(
+                        "background-color:#20a740"
+                    )
+        elif level==2:
+            obj.setStyleSheet(
+                        "background-color:#FDFFA9"
+                    )
+        elif level==3:
+            obj.setStyleSheet(
+                        "background-color:#D9534F"
+                    )
+        QTimer.singleShot(2000, lambda: self.change_background_color(obj, None))
 
     def insert_into_table(self, files, operation, state):
         for file in files:

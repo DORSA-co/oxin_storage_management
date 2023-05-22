@@ -2,7 +2,7 @@ from backend import FileManager
 import os
 from PySide6.QtCore import *
 from PySide6.QtCore import QTimer
-from backend import database_utils
+from backend import database_utils, texts
 
 
 CHART_UPDATE_TIME = 15
@@ -34,6 +34,7 @@ class API():
 
         self.ui.start_btn.clicked.connect(self.start_cleaning)
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
+        self.ui.revert_settings_btn.clicked.connect(self.read_settings_from_db)
 
     def read_settings_from_db(self):
         res, settings = self.db.load_storage_setting()
@@ -52,6 +53,32 @@ class API():
         ssd_datasets_path = self.ui.ssd_ds_path_lineEdit.text()
         hdd_path = self.ui.hdd_path_lineEdit.text()
 
+        if max_cleanup_percentage < min_cleanup_percentage:
+            self.ui.set_warning(self.ui.settings_warning_label,
+                                texts.WARNINGS['CLEANUP_PERCENTAGE_WARNING'][self.ui.language],
+                                level=2)
+            self.ui.change_background_color(obj=self.ui.max_percent_spinBox, level=2)
+            self.ui.change_background_color(obj=self.ui.min_percent_spinBox, level=2)
+            return       
+        if not os.path.exists(ssd_images_path):
+            self.ui.set_warning(self.ui.settings_warning_label,
+                                texts.WARNINGS['PATH_NOT_EXISTS'][self.ui.language],
+                                level=2)
+            self.ui.change_background_color(obj=self.ui.ssd_image_path_lineEdit, level=2)
+            return
+        if not os.path.exists(ssd_datasets_path):
+            self.ui.set_warning(self.ui.settings_warning_label,
+                                texts.WARNINGS['PATH_NOT_EXISTS'][self.ui.language],
+                                level=2)
+            self.ui.change_background_color(obj=self.ui.ssd_ds_path_lineEdit, level=2)
+            return
+        if not os.path.exists(hdd_path):
+            self.ui.set_warning(self.ui.settings_warning_label,
+                                texts.WARNINGS['PATH_NOT_EXISTS'][self.ui.language],
+                                level=2)
+            self.ui.change_background_color(obj=self.ui.hdd_path_lineEdit, level=2)
+            return
+
         self.db.set_storage_setting(
             max_cleanup_percentage,
             min_cleanup_percentage,
@@ -65,6 +92,12 @@ class API():
         self.settings['ssd_images_path'] = ssd_images_path
         self.settings['ssd_datasets_path'] = ssd_datasets_path
         self.settings['hdd_path'] = hdd_path
+
+        self.update_charts()
+
+        self.ui.set_warning(self.ui.settings_warning_label,
+                                texts.MESSEGES['APPLY_SUCCESSFULY'][self.ui.language],
+                                level=1)
 
     def create_charts_timer(self):
         self.update_charts_timer = QTimer()
@@ -90,8 +123,8 @@ class API():
         self.ui.update_images_chart(input_info)
 
     def update_datasets_chart(self):
-        path = '/home/reyhane/Desktop/default_dataset'
-        files = self.fm.scan.scan_by_depth(path, 0)
+        # path = '/home/reyhane/Desktop/default_dataset'
+        files = self.fm.scan.scan_by_depth(self.settings['ssd_datasets_path'], 0)
         free = self.ssd_ds_file_manager.free.toGB()
         self.ui.update_datasets_chart(free, files)
 

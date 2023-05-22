@@ -132,16 +132,11 @@ class ColorRGB(object):
         r = self.r * (1-percent) + color.r * percent
         g = self.g * (1-percent) + color.g * percent
         b = self.b * (1-percent) + color.b * percent
-
         return ColorRGB(r, g, b)
 
     @property
     def hexcode(self):
-        return '#{r}{g}{b}'.format(
-            r='{:x}'.format(self.r),
-            g='{:x}'.format(self.g),
-            b='{:x}'.format(self.b)
-        )
+        return '#{:02x}{:02x}{:02x}'.format(self.r, self.g, self.b)
 
     @staticmethod
     def random_color():
