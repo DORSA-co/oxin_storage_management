@@ -240,7 +240,7 @@ class SmartChart(QtCharts.QChart):
                         eg. ('#666666')
         :return: QtGui.QColor
         """
-        from backend import color
+        from storage_backend import color
 
         new_color = color.ColorRGB.from_hex(hexcode).blend(percent=0.3).hexcode
         return QtGui.QColor(new_color)

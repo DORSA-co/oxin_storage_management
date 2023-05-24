@@ -1,14 +1,14 @@
-from backend import FileManager
+from storage_backend import FileManager
 import os
 from PySide6.QtCore import *
 from PySide6.QtCore import QTimer
-from backend import database_utils, texts
+from storage_backend import database_utils, texts
 
 
 CHART_UPDATE_TIME = 15
 DISKS_CHECK_TIME = 60
 
-class API():
+class storage_api():
     def __init__(self, ui):
         self.ui = ui
         
@@ -20,7 +20,7 @@ class API():
         self.ssd_image_file_manager = FileManager.diskMemory(path=self.settings['ssd_images_path'])
         self.hdd_file_manager = FileManager.diskMemory(path=self.settings['hdd_path'])
         ############################## CHANGE ###############################
-        self.hdd_file_manager.free = FileManager.Space(500*1024*1024)
+        # self.hdd_file_manager.free = FileManager.Space(500*1024*1024)
         #####################################################################
 
         self.ssd_sheet_should_clean = []
@@ -29,8 +29,8 @@ class API():
         self.update_charts()
         self.check_disks()
 
-        self.create_charts_timer()
-        self.create_disks_timer()
+        # self.create_charts_timer()
+        # self.create_disks_timer()
 
         self.ui.start_btn.clicked.connect(self.start_cleaning)
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
@@ -39,7 +39,7 @@ class API():
     def read_settings_from_db(self):
         res, settings = self.db.load_storage_setting()
         if res:
-            self.settings = settings[0]
+            self.settings = settings
             self.ui.set_settings(self.settings['max_cleanup_percentage'], 
                                  self.settings['min_cleanup_percentage'],
                                  self.settings['ssd_images_path'],

@@ -271,7 +271,7 @@ Line {
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="resources.qrc">:/icons/Icons/dorsa_white.png</pixmap>
+          <pixmap resource="storage_resources.qrc">:/icons/Icons/dorsa_white.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -318,7 +318,7 @@ Line {
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="storage_resources.qrc">
            <normaloff>:/icons/Icons/minimize_white.png</normaloff>:/icons/Icons/minimize_white.png</iconset>
          </property>
          <property name="iconSize">
@@ -356,7 +356,7 @@ Line {
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="storage_resources.qrc">
            <normaloff>:/icons/Icons/resize_white.png</normaloff>:/icons/Icons/resize_white.png</iconset>
          </property>
          <property name="iconSize">
@@ -394,7 +394,7 @@ Line {
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset resource="storage_resources.qrc">
            <normaloff>:/icons/Icons/exit_white.png</normaloff>:/icons/Icons/exit_white.png</iconset>
          </property>
          <property name="iconSize">
@@ -443,7 +443,7 @@ Line {
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="resources.qrc">
+            <iconset resource="storage_resources.qrc">
              <normaloff>:/icons/Icons/home_icon.png</normaloff>:/icons/Icons/home_icon.png</iconset>
            </property>
            <property name="iconSize">
@@ -472,7 +472,7 @@ Line {
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="resources.qrc">
+            <iconset resource="storage_resources.qrc">
              <normaloff>:/icons/Icons/report.png</normaloff>:/icons/Icons/report.png</iconset>
            </property>
            <property name="iconSize">
@@ -495,7 +495,7 @@ Line {
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="resources.qrc">
+            <iconset resource="storage_resources.qrc">
              <normaloff>:/icons/Icons/setting_icon.png</normaloff>:/icons/Icons/setting_icon.png</iconset>
            </property>
            <property name="iconSize">
@@ -525,7 +525,7 @@ Line {
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="main_page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -847,7 +847,7 @@ Line {
                   <string>  Advance</string>
                  </property>
                  <property name="icon">
-                  <iconset resource="resources.qrc">
+                  <iconset resource="storage_resources.qrc">
                    <normaloff>:/icons/Icons/down.png</normaloff>:/icons/Icons/down.png</iconset>
                  </property>
                 </widget>
@@ -945,7 +945,7 @@ Line {
                      <string/>
                     </property>
                     <property name="icon">
-                     <iconset resource="resources.qrc">
+                     <iconset resource="storage_resources.qrc">
                       <normaloff>:/icons/Icons/browse.png</normaloff>:/icons/Icons/browse.png</iconset>
                     </property>
                     <property name="iconSize">
@@ -997,7 +997,7 @@ Line {
                      <string/>
                     </property>
                     <property name="icon">
-                     <iconset resource="resources.qrc">
+                     <iconset resource="storage_resources.qrc">
                       <normaloff>:/icons/Icons/browse.png</normaloff>:/icons/Icons/browse.png</iconset>
                     </property>
                     <property name="iconSize">
@@ -1049,7 +1049,7 @@ Line {
                      <string/>
                     </property>
                     <property name="icon">
-                     <iconset resource="resources.qrc">
+                     <iconset resource="storage_resources.qrc">
                       <normaloff>:/icons/Icons/browse.png</normaloff>:/icons/Icons/browse.png</iconset>
                     </property>
                     <property name="iconSize">
@@ -1125,7 +1125,8 @@ Line {
   </widget>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="storage_resources.qrc"/>
+  <include location="storage_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

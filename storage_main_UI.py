@@ -5,12 +5,14 @@ from PySide6.QtCharts import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtUiTools import loadUiType
-from backend import texts, color
-from backend.chart_funcs import SimpleChart, SmartChart, SimpleChartView
-from backend.FileDialog import FileDialog
-from api import API
+from storage_backend import texts, color
+# from storage_backend import chart_funcs
+from storage_backend.chart_funcs import SimpleChart, SmartChart, SimpleChartView
+from storage_backend.FileDialog import FileDialog
+from storage_api import storage_api
+import storage_resources_rc
 
-ui, _ = loadUiType("UI/main.ui")
+ui, _ = loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage_UI/storage_main.ui"))
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
 
 ANIMATION_DURATION = 300
@@ -28,7 +30,7 @@ class storage_management(QMainWindow, ui):
     def __init__(self):
         super(storage_management, self).__init__()
         self.setupUi(self)
-        flags = Qt.WindowFlags(Qt.FramelessWindowHint)
+        flags = Qt.WindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.pos_ = self.pos()
         self.setWindowFlags(flags)
         title = "Storage Management"
@@ -215,7 +217,7 @@ class storage_management(QMainWindow, ui):
             table_item = QTableWidgetItem(file.name())
             table_item.setTextAlignment(Qt.AlignCenter)
             table_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-            table_item.setCheckState(Qt.Unchecked) 
+            table_item.setCheckState(Qt.Checked) 
             self.report_table.setItem(rowPosition, 0, table_item)
 
             table_item = QTableWidgetItem(operation)
@@ -307,6 +309,6 @@ class storage_management(QMainWindow, ui):
 if __name__ == "__main__":
     app = QApplication()
     win = storage_management()
-    api = API(win)
+    api = storage_api(win)
     win.show()
     sys.exit(app.exec())
