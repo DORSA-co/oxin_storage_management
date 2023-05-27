@@ -163,6 +163,9 @@ class storage_management(QMainWindow, ui):
             self.main_page_btn.setStyleSheet('')
             self.report_page_btn.setStyleSheet('')
             self.settings_btn.setStyleSheet('background-color: rgb(90, 83, 145);')
+
+    def show_report_page(self):
+        self.stackedWidget.setCurrentWidget(self.report_page)
     
     def set_warning(self, label_obj, text, level=1):
         """Show warning with time delay 2 second , all labels for show warning has been set here"""
@@ -229,12 +232,15 @@ class storage_management(QMainWindow, ui):
             self.report_table.setItem(rowPosition, 2, table_item)
 
     def get_table_checked_items(self):
-        selected_file_names = []
+        selected_file_names = {}
         for row in range(self.report_table.rowCount()): 
             if self.report_table.item(row, 0).checkState() == Qt.Checked:
-                selected_file_names.append(self.report_table.item(row, 0).text())
+                selected_file_names[self.report_table.item(row, 0).text()] = row
 
         return selected_file_names
+
+    def change_table_status(self, row, status):
+        self.report_table.item(row, 2).setText(status)
 
     def clear_table(self):
         self.report_table.clear()

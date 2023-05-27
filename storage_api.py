@@ -148,20 +148,27 @@ class storage_api():
                                                                     depth=3, 
                                                                     sorting_func= self.fm.sort.sort_by_creationtime)
                 self.ui.insert_into_table(self.hdd_sheet_should_clean, 'Delete', '-')
+        self.ui.show_report_page()
+        self.start_cleaning()
             
     def start_cleaning(self):
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
+                self.ui.change_table_status(selected_file_names[file.name()], 'Doing')
                 self.fm.action.delete(file.path())
+                self.ui.change_table_status(selected_file_names[file.name()], 'Done')
 
         self.hdd_sheet_should_clean = []
 
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
+                self.ui.change_table_status(selected_file_names[file.name()], 'Doing...')
                 path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
-                path = os.path.join( path, file.name() )
-                # print(path, file.dirpath())
-                self.fm.action.shortcut(path, file.path())
+                # path = os.path.join( path, file.name())
+                self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
+                self.ui.change_table_status(selected_file_names[file.name()], 'Done')
 
         self.ssd_sheet_should_clean = []
+        print('close')
+        self.ui.close_win()

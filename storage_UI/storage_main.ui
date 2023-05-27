@@ -525,7 +525,7 @@ Line {
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="main_page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -672,7 +672,7 @@ Line {
                <item>
                 <widget class="QPushButton" name="start_btn">
                  <property name="enabled">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="minimumSize">
                   <size>

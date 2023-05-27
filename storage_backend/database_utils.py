@@ -26,6 +26,7 @@ class dataBaseUtils:
 
         # table names
         self.storage_settings = "storage_settings"
+        self.sheets_info = "sheets_info"
 
     def load_storage_setting(self):
         """This function is used to get storage settings from table
@@ -67,6 +68,10 @@ class dataBaseUtils:
         res5 = self.db.update_record(self.storage_settings, "hdd_path", str(hdd_path), "id", "1")
 
         return res1 and res2 and res3 and res4 and res5
+
+    def change_sheet_main_path(self, new_main_path, sheet_id):
+        res = self.db.update_record(self.sheets_info, "main_path", str(new_main_path), "sheet_id", sheet_id)
+        return res
 
 
 if __name__ == "__main__":
