@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>664</width>
-    <height>431</height>
+    <height>461</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -525,7 +525,7 @@ Line {
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="main_page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -565,7 +565,7 @@ Line {
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>0</width>
+                   <width>262</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -587,6 +587,12 @@ Line {
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>262</width>
+                   <height>0</height>
+                  </size>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -746,13 +752,13 @@ Line {
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>180</width>
+                   <width>185</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>180</width>
+                   <width>185</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -788,13 +794,13 @@ Line {
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>180</width>
+                   <width>185</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>180</width>
+                   <width>185</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -813,6 +819,64 @@ Line {
                  </property>
                  <property name="maximum">
                   <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_224">
+               <item>
+                <widget class="QLabel" name="update_time_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>185</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>185</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>Update time:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="update_time_spinBox">
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>60</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="minutes_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>minutes</string>
                  </property>
                 </widget>
                </item>
@@ -1082,6 +1146,9 @@ Line {
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <widget class="QPushButton" name="apply_settings_btn">
+                 <property name="cursor">
+                  <cursorShape>PointingHandCursor</cursorShape>
+                 </property>
                  <property name="text">
                   <string>Apply</string>
                  </property>
@@ -1089,6 +1156,9 @@ Line {
                </item>
                <item>
                 <widget class="QPushButton" name="revert_settings_btn">
+                 <property name="cursor">
+                  <cursorShape>PointingHandCursor</cursorShape>
+                 </property>
                  <property name="text">
                   <string>Revert</string>
                  </property>
