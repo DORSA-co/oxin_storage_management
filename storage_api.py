@@ -163,7 +163,7 @@ class storage_api():
 
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
-                self.ui.change_table_status(selected_file_names[file.name()], 'Doing...')
+                self.ui.change_table_status(selected_file_names[file.name()], 'Doing')
                 path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
                 # path = os.path.join( path, file.name())
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
