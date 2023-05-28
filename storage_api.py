@@ -26,8 +26,8 @@ class storage_api():
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
 
-        self.update_charts()
-        self.check_disks()
+        # self.update_charts()
+        # self.check_disks()
 
         # self.create_charts_timer()
         # self.create_disks_timer()
@@ -170,5 +170,5 @@ class storage_api():
                 self.ui.change_table_status(selected_file_names[file.name()], 'Done')
 
         self.ssd_sheet_should_clean = []
-        print('close')
-        self.ui.close_win()
+        # print('close')
+        # self.ui.close_win()
