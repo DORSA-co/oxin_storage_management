@@ -42,6 +42,7 @@ class storage_api():
             self.settings = settings
             self.ui.set_settings(self.settings['max_cleanup_percentage'], 
                                  self.settings['min_cleanup_percentage'],
+                                 self.settings['update_time'],
                                  self.settings['ssd_images_path'],
                                  self.settings['ssd_datasets_path'],
                                  self.settings['hdd_path'])
@@ -49,6 +50,8 @@ class storage_api():
     def apply_settings(self):
         max_cleanup_percentage = self.ui.max_percent_spinBox.value()
         min_cleanup_percentage = self.ui.min_percent_spinBox.value()
+        update_time = self.ui.update_time_spinBox.value()
+
         ssd_images_path = self.ui.ssd_image_path_lineEdit.text()
         ssd_datasets_path = self.ui.ssd_ds_path_lineEdit.text()
         hdd_path = self.ui.hdd_path_lineEdit.text()
@@ -82,6 +85,7 @@ class storage_api():
         self.db.set_storage_setting(
             max_cleanup_percentage,
             min_cleanup_percentage,
+            update_time,
             ssd_images_path,
             ssd_datasets_path,
             hdd_path
@@ -89,6 +93,7 @@ class storage_api():
 
         self.settings['max_cleanup_percentage'] = max_cleanup_percentage 
         self.settings['min_cleanup_percentage'] = min_cleanup_percentage
+        self.settings['update_time'] = update_time
         self.settings['ssd_images_path'] = ssd_images_path
         self.settings['ssd_datasets_path'] = ssd_datasets_path
         self.settings['hdd_path'] = hdd_path
@@ -114,6 +119,8 @@ class storage_api():
         self.update_datasets_chart()
 
     def update_images_chart(self):
+        self.ssd_image_file_manager.refresh()
+        self.hdd_file_manager.refresh()
         input_info = {'SSD': {'Used':self.ssd_image_file_manager.used.toGB(), 
                               'Free': self.ssd_image_file_manager.free.toGB()}, 
                     'HDD': {'Used':self.hdd_file_manager.used.toGB(), 
@@ -124,8 +131,10 @@ class storage_api():
 
     def update_datasets_chart(self):
         # path = '/home/reyhane/Desktop/default_dataset'
+        self.ssd_ds_file_manager.refresh()
         files = self.fm.scan.scan_by_depth(self.settings['ssd_datasets_path'], 0)
         free = self.ssd_ds_file_manager.free.toGB()
+        self.ui.clear_datasets_chart()
         self.ui.update_datasets_chart(free, files)
 
     def check_disks(self):
@@ -155,7 +164,7 @@ class storage_api():
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
-                self.ui.change_table_status(selected_file_names[file.name()], 'Doing')
+                self.ui.change_table_status(selected_file_names[file.name()], 'Doing...')
                 self.fm.action.delete(file.path())
                 self.ui.change_table_status(selected_file_names[file.name()], 'Done')
 

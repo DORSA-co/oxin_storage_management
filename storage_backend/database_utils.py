@@ -38,14 +38,13 @@ class dataBaseUtils:
         res, settings = self.db.search(
             self.storage_settings, "id", "1"
         )
-        print(res)
         if res == database.SUCCESSFULL:
             return True, settings[0]
         else:
             # Log Exception
             return False, settings
 
-    def set_storage_setting(self, max_cleanup_percentage, min_cleanup_percentage, ssd_image_path, ssd_dataset_path, hdd_path):
+    def set_storage_setting(self, max_cleanup_percentage, min_cleanup_percentage, update_time, ssd_image_path, ssd_dataset_path, hdd_path):
         """This function set settings in database table
 
         :param max_cleanup_percentage: maximum percentage to cleanup.
@@ -63,11 +62,12 @@ class dataBaseUtils:
         """
         res1 = self.db.update_record(self.storage_settings, "max_cleanup_percentage", str(max_cleanup_percentage), "id", "1")
         res2 = self.db.update_record(self.storage_settings, "min_cleanup_percentage", str(min_cleanup_percentage), "id", "1")
-        res3 = self.db.update_record(self.storage_settings, "ssd_images_path", str(ssd_image_path), "id", "1")
-        res4 = self.db.update_record(self.storage_settings, "ssd_datasets_path", str(ssd_dataset_path), "id", "1")
-        res5 = self.db.update_record(self.storage_settings, "hdd_path", str(hdd_path), "id", "1")
+        res3 = self.db.update_record(self.storage_settings, "update_time", str(update_time), "id", "1")
+        res4 = self.db.update_record(self.storage_settings, "ssd_images_path", str(ssd_image_path), "id", "1")
+        res5 = self.db.update_record(self.storage_settings, "ssd_datasets_path", str(ssd_dataset_path), "id", "1")
+        res6 = self.db.update_record(self.storage_settings, "hdd_path", str(hdd_path), "id", "1")
 
-        return res1 and res2 and res3 and res4 and res5
+        return res1 and res2 and res3 and res4 and res5 and res6
 
     def change_sheet_main_path(self, new_main_path, sheet_id):
         res = self.db.update_record(self.sheets_info, "main_path", str(new_main_path), "sheet_id", sheet_id)

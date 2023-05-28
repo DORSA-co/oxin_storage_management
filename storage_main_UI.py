@@ -49,6 +49,10 @@ class storage_management(QMainWindow, ui):
         self.create_images_charts()
         self.create_datasets_charts()
 
+    # def showEvent(self, event):
+    #     print('showwwww')
+    #     return super().showEvent(event)
+
     def create_images_charts(self):
         self.image_chart = SmartChart(title="Images")
         self.image_chart_view = SimpleChartView(self.image_chart)
@@ -291,9 +295,10 @@ class storage_management(QMainWindow, ui):
         icon_path = os.path.join(ICON_MAIN_PATH, icon_name)
         obj.setIcon(QPixmap(icon_path))
 
-    def set_settings(self, max_cleanup_percentage, min_cleanup_percentage, ssd_images_path, ssd_datasets_path, hdd_path):
+    def set_settings(self, max_cleanup_percentage, min_cleanup_percentage, update_time, ssd_images_path, ssd_datasets_path, hdd_path):
         self.max_percent_spinBox.setValue(int(max_cleanup_percentage))
         self.min_percent_spinBox.setValue(int(min_cleanup_percentage))
+        self.update_time_spinBox.setValue(int(update_time))
 
         self.ssd_image_path_lineEdit.setText(ssd_images_path)
         self.ssd_ds_path_lineEdit.setText(ssd_datasets_path)
