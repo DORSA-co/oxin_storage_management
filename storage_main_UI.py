@@ -49,9 +49,18 @@ class storage_management(QMainWindow, ui):
         self.create_images_charts()
         self.create_datasets_charts()
 
-    # def showEvent(self, event):
-    #     print('showwwww')
-    #     return super().showEvent(event)
+    def showEvent(self, event):
+        # print(self.visibleRegion().isEmpty())
+        # self.function()
+        # print(self.isVisible())
+        super().showEvent(event)
+        return 
+
+    def function(self):
+        for i in range(1000000):
+            print(i)
+        # import time
+        # time.sleep(5)
 
     def create_images_charts(self):
         self.image_chart = SmartChart(title="Images")
@@ -234,6 +243,9 @@ class storage_management(QMainWindow, ui):
             table_item = QTableWidgetItem(state)
             table_item.setTextAlignment(Qt.AlignCenter)
             self.report_table.setItem(rowPosition, 2, table_item)
+
+    def clear_table(self):
+        self.report_table.clear()
 
     def get_table_checked_items(self):
         selected_file_names = {}

@@ -1,8 +1,8 @@
 from storage_backend import FileManager
 import os
 from PySide6.QtCore import *
-from PySide6.QtCore import QTimer
-from storage_backend import database_utils, texts
+from PySide6.QtCore import QTimer, QThread
+from storage_backend import database_utils, texts, storage_worker
 
 
 CHART_UPDATE_TIME = 15
@@ -26,13 +26,12 @@ class storage_api():
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
 
-        # self.update_charts()
-        # self.check_disks()
+        self.start()
 
         # self.create_charts_timer()
         # self.create_disks_timer()
 
-        self.ui.start_btn.clicked.connect(self.start_cleaning)
+        self.ui.start_btn.clicked.connect(self.ui.function)
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
         self.ui.revert_settings_btn.clicked.connect(self.read_settings_from_db)
 
@@ -138,6 +137,7 @@ class storage_api():
         self.ui.update_datasets_chart(free, files)
 
     def check_disks(self):
+        self.ui.clear_table()
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
         if ssd_image_percent > self.settings['max_cleanup_percentage']:
             clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - self.settings['min_cleanup_percentage']) / 100
@@ -158,26 +158,50 @@ class storage_api():
                                                                     sorting_func= self.fm.sort.sort_by_creationtime)
                 self.ui.insert_into_table(self.hdd_sheet_should_clean, 'Delete', '-')
         self.ui.show_report_page()
-        self.start_cleaning()
             
     def start_cleaning(self):
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
-                self.ui.change_table_status(selected_file_names[file.name()], 'Doing...')
+                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
                 self.fm.action.delete(file.path())
-                self.ui.change_table_status(selected_file_names[file.name()], 'Done')
+                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
 
         self.hdd_sheet_should_clean = []
 
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
-                self.ui.change_table_status(selected_file_names[file.name()], 'Doing')
+                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing')
                 path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
                 # path = os.path.join( path, file.name())
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
-                self.ui.change_table_status(selected_file_names[file.name()], 'Done')
+                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
 
         self.ssd_sheet_should_clean = []
-        # print('close')
-        # self.ui.close_win()
+        
+    def start_cleaning_thread(self):
+        self.s_thread = QThread()
+        self.s_worker = storage_worker.storage_worker()
+        self.s_worker.assign_parameters(
+            storage_api_obj = self
+        )
+
+        self.s_worker.moveToThread(self.s_thread)
+        self.s_thread.started.connect(self.s_worker.run)
+        self.s_worker.finished.connect(self.s_thread.quit)
+        self.s_worker.finished.connect(self.ui.close_win)
+        self.s_worker.finished.connect(self.s_worker.deleteLater)
+        self.s_thread.finished.connect(self.s_thread.deleteLater)
+        self.s_worker.update_table_status.connect(self.ui.change_table_status)
+        
+        self.s_thread.start()
+
+    def start(self):
+        self.ssd_image_file_manager.refresh()
+        self.hdd_file_manager.refresh()
+        import time
+        t = time.time()
+        self.update_charts()
+        print((time.time() - t)*1000)
+        self.check_disks()
+        self.start_cleaning_thread()
