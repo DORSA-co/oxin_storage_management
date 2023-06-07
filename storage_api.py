@@ -26,12 +26,11 @@ class storage_api():
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
 
-        self.start()
+        # self.start()
 
         # self.create_charts_timer()
         # self.create_disks_timer()
-
-        self.ui.start_btn.clicked.connect(self.ui.function)
+        
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
         self.ui.revert_settings_btn.clicked.connect(self.read_settings_from_db)
 
@@ -117,6 +116,10 @@ class storage_api():
         self.update_images_chart()
         self.update_datasets_chart()
 
+    def set_charts_animation(self, value):
+        self.ui.set_animation_images_chart(value)
+        self.ui.set_animation_datasets_chart(value)
+
     def update_images_chart(self):
         self.ssd_image_file_manager.refresh()
         self.hdd_file_manager.refresh()
@@ -163,19 +166,23 @@ class storage_api():
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
+                self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
                 self.fm.action.delete(file.path())
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
+                self.s_worker.update_charts.emit()
 
         self.hdd_sheet_should_clean = []
 
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
-                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing')
+                self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
+                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
                 path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
                 # path = os.path.join( path, file.name())
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
+                self.s_worker.update_charts.emit()
 
         self.ssd_sheet_should_clean = []
         
@@ -187,21 +194,26 @@ class storage_api():
         )
 
         self.s_worker.moveToThread(self.s_thread)
+        
         self.s_thread.started.connect(self.s_worker.run)
+
         self.s_worker.finished.connect(self.s_thread.quit)
         self.s_worker.finished.connect(self.ui.close_win)
         self.s_worker.finished.connect(self.s_worker.deleteLater)
+
         self.s_thread.finished.connect(self.s_thread.deleteLater)
+        
         self.s_worker.update_table_status.connect(self.ui.change_table_status)
+        self.s_worker.update_charts.connect(self.update_charts)
+        self.s_worker.update_scrollbar.connect(self.ui.update_scrollbar)
         
         self.s_thread.start()
 
     def start(self):
+        # self.set_charts_animation(True)
         self.ssd_image_file_manager.refresh()
         self.hdd_file_manager.refresh()
-        import time
-        t = time.time()
         self.update_charts()
-        print((time.time() - t)*1000)
         self.check_disks()
+        # self.set_charts_animation(False)
         self.start_cleaning_thread()

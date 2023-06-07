@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>664</width>
-    <height>461</height>
+    <height>479</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -436,6 +436,9 @@ Line {
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
+           <property name="toolTip">
+            <string>Home</string>
+           </property>
            <property name="styleSheet">
             <string notr="true">background-color: rgb(90, 83, 145);</string>
            </property>
@@ -468,6 +471,9 @@ Line {
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
+           <property name="toolTip">
+            <string>Report</string>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -490,6 +496,9 @@ Line {
            </property>
            <property name="cursor">
             <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="toolTip">
+            <string>Settings</string>
            </property>
            <property name="text">
             <string/>
@@ -636,6 +645,9 @@ Line {
                </attribute>
                <attribute name="horizontalHeaderStretchLastSection">
                 <bool>true</bool>
+               </attribute>
+               <attribute name="verticalHeaderMinimumSectionSize">
+                <number>30</number>
                </attribute>
                <column>
                 <property name="text">
@@ -850,7 +862,7 @@ Line {
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>Update time:</string>
+                  <string>Update Time:</string>
                  </property>
                 </widget>
                </item>
@@ -876,7 +888,7 @@ Line {
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>minutes</string>
+                  <string>Minutes</string>
                  </property>
                 </widget>
                </item>
@@ -979,15 +991,18 @@ Line {
                     </property>
                     <property name="minimumSize">
                      <size>
-                      <width>150</width>
+                      <width>200</width>
                       <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>150</width>
+                      <width>200</width>
                       <height>16777215</height>
                      </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>Select Folder</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true"/>
@@ -998,10 +1013,17 @@ Line {
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="ssd_image_path_lineEdit"/>
+                   <widget class="QLineEdit" name="ssd_image_path_lineEdit">
+                    <property name="toolTip">
+                     <string>Select Folder</string>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="ssd_image_path_btn">
+                    <property name="toolTip">
+                     <string>Select Folder</string>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">background-color: rgb(23, 17, 69);</string>
                     </property>
@@ -1034,13 +1056,13 @@ Line {
                     </property>
                     <property name="minimumSize">
                      <size>
-                      <width>150</width>
+                      <width>200</width>
                       <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>150</width>
+                      <width>200</width>
                       <height>16777215</height>
                      </size>
                     </property>
@@ -1057,6 +1079,9 @@ Line {
                   </item>
                   <item>
                    <widget class="QPushButton" name="ssd_ds_path_btn">
+                    <property name="toolTip">
+                     <string>Select Folder</string>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -1086,13 +1111,13 @@ Line {
                     </property>
                     <property name="minimumSize">
                      <size>
-                      <width>150</width>
+                      <width>200</width>
                       <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>150</width>
+                      <width>200</width>
                       <height>16777215</height>
                      </size>
                     </property>
@@ -1109,6 +1134,9 @@ Line {
                   </item>
                   <item>
                    <widget class="QPushButton" name="hdd_path_btn">
+                    <property name="toolTip">
+                     <string>Select Folder</string>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>

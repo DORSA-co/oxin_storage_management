@@ -40,6 +40,15 @@ class SimpleChart(QtCharts.QChart):
         self.__series.setHoleSize(0.6)
         self.addSeries(self.__series)
 
+    def set_animation(self, value):
+        if value:
+            self.setAnimationOptions(QtCharts.QChart.SeriesAnimations)
+        else:
+            self.setAnimationOptions(QtCharts.QChart.NoAnimation)
+
+    def set_title(self, title):
+        self.setTitle(title)
+
     def clear(self):
         """
         Clear all slices in the pie chart
@@ -60,7 +69,7 @@ class SimpleChart(QtCharts.QChart):
         slice_.setColor(QtGui.QColor(color))
         slice_.setLabelBrush(QtGui.QColor(color))
 
-        slice_.hovered.connect(lambda is_hovered: self.__explode(slice_, is_hovered))
+        # slice_.hovered.connect(lambda is_hovered: self.__explode(slice_, is_hovered))
         # slice_.percentageChanged.connect(lambda: self.__update_label(slice_, name))
 
         self.__series.append(slice_)
@@ -152,6 +161,15 @@ class SmartChart(QtCharts.QChart):
         for slice_ in self.__inner.slices():
             self.__inner.take(slice_)
 
+    def set_animation(self, value):
+        if value:
+            self.setAnimationOptions(QtCharts.QChart.SeriesAnimations)
+        else:
+            self.setAnimationOptions(QtCharts.QChart.NoAnimation)
+
+    def set_title(self, title):
+        self.setTitle(title) 
+
     def add_slice_outer(self, name, value, color):
         """
         Add one slice to the pie chart
@@ -166,7 +184,7 @@ class SmartChart(QtCharts.QChart):
         outer_slice.setColor(QtGui.QColor(color))
         outer_slice.setLabelBrush(QtGui.QColor(color))
 
-        outer_slice.hovered.connect(lambda is_hovered: self.__explode(outer_slice, is_hovered))
+        # outer_slice.hovered.connect(lambda is_hovered: self.__explode(outer_slice, is_hovered))
         outer_slice.percentageChanged.connect(lambda: self.__update_label_outer(outer_slice, name))
 
         self.__outer.append(outer_slice)

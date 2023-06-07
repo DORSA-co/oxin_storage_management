@@ -10,6 +10,8 @@ class storage_worker(sQObject):
 
     finished = sSignal()
     update_table_status = sSignal(int, str)
+    update_charts = sSignal()
+    update_scrollbar = sSignal(int)
 
     def assign_parameters(self, storage_api_obj):
         self.s_api = storage_api_obj
