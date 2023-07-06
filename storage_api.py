@@ -25,6 +25,7 @@ class storage_api():
 
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
+        self.filters = []
 
         # self.start()
 
@@ -38,23 +39,23 @@ class storage_api():
         res, settings = self.db.load_storage_setting()
         if res:
             self.settings = settings
-            self.ui.set_settings(self.settings['max_cleanup_percentage'], 
-                                 self.settings['min_cleanup_percentage'],
+            self.ui.set_settings(self.settings['storage_upper_limit'], 
+                                 self.settings['storage_lower_limit'],
                                  self.settings['update_time'],
                                  self.settings['ssd_images_path'],
                                  self.settings['ssd_datasets_path'],
                                  self.settings['hdd_path'])
 
     def apply_settings(self):
-        max_cleanup_percentage = self.ui.max_percent_spinBox.value()
-        min_cleanup_percentage = self.ui.min_percent_spinBox.value()
+        storage_upper_limit = self.ui.max_percent_spinBox.value()
+        storage_lower_limit = self.ui.min_percent_spinBox.value()
         update_time = self.ui.update_time_spinBox.value()
 
         ssd_images_path = self.ui.ssd_image_path_lineEdit.text()
         ssd_datasets_path = self.ui.ssd_ds_path_lineEdit.text()
         hdd_path = self.ui.hdd_path_lineEdit.text()
 
-        if max_cleanup_percentage < min_cleanup_percentage:
+        if storage_upper_limit < storage_lower_limit:
             self.ui.set_warning(self.ui.settings_warning_label,
                                 texts.WARNINGS['CLEANUP_PERCENTAGE_WARNING'][self.ui.language],
                                 level=2)
@@ -81,20 +82,24 @@ class storage_api():
             return
 
         self.db.set_storage_setting(
-            max_cleanup_percentage,
-            min_cleanup_percentage,
+            storage_upper_limit,
+            storage_lower_limit,
             update_time,
             ssd_images_path,
             ssd_datasets_path,
             hdd_path
         )
 
-        self.settings['max_cleanup_percentage'] = max_cleanup_percentage 
-        self.settings['min_cleanup_percentage'] = min_cleanup_percentage
+        self.settings['storage_upper_limit'] = storage_upper_limit 
+        self.settings['storage_lower_limit'] = storage_lower_limit
         self.settings['update_time'] = update_time
         self.settings['ssd_images_path'] = ssd_images_path
         self.settings['ssd_datasets_path'] = ssd_datasets_path
         self.settings['hdd_path'] = hdd_path
+
+        self.ssd_ds_file_manager = FileManager.diskMemory(path=self.settings['ssd_datasets_path'])
+        self.ssd_image_file_manager = FileManager.diskMemory(path=self.settings['ssd_images_path'])
+        self.hdd_file_manager = FileManager.diskMemory(path=self.settings['hdd_path'])
 
         self.update_charts()
 
@@ -139,17 +144,25 @@ class storage_api():
         self.ui.clear_datasets_chart()
         self.ui.update_datasets_chart(free, files)
 
+    def add_filter(self, filter):
+        self.filters.append(filter)
+
+    def clear_filters(self):
+        self.filters = []
+
     def check_disks(self):
         self.ui.clear_table()
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
-        if ssd_image_percent > self.settings['max_cleanup_percentage']:
-            clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - self.settings['min_cleanup_percentage']) / 100
+        if ssd_image_percent > self.settings['storage_upper_limit']:
+            clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - self.settings['storage_lower_limit']) / 100
             
 
             self.ssd_sheet_should_clean, ssd_flag, ssd_space_needed = self.fm.scan.scan_size_limit(self.settings['ssd_images_path'],
                                                                     FileManager.Space(clean_space_ssd),
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
+
+            self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
 
             free_hdd = self.hdd_file_manager.free.toBytes()

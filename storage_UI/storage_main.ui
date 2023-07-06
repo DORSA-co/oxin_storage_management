@@ -309,7 +309,7 @@ Line {
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="toolTip">
-          <string>Minimize</string>
+          <string/>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -347,7 +347,7 @@ Line {
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="toolTip">
-          <string>Minimize</string>
+          <string/>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -385,7 +385,7 @@ Line {
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="toolTip">
-          <string>Close</string>
+          <string/>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -778,17 +778,30 @@ Line {
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>Max Cleanup Percentage:</string>
+                  <string>Storage upper limit:</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QSpinBox" name="max_percent_spinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
                  <property name="maximum">
                   <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>%</string>
                  </property>
                 </widget>
                </item>
@@ -820,17 +833,30 @@ Line {
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>Min Cleanup Percentage:</string>
+                  <string>Storage lower limit:</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QSpinBox" name="min_percent_spinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
                  <property name="maximum">
                   <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>%</string>
                  </property>
                 </widget>
                </item>
@@ -862,12 +888,18 @@ Line {
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>Update Time:</string>
+                  <string>Update Rate:</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QSpinBox" name="update_time_spinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -875,14 +907,14 @@ Line {
                   <number>1</number>
                  </property>
                  <property name="maximum">
-                  <number>60</number>
+                  <number>600</number>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLabel" name="minutes_label">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>

@@ -40,19 +40,19 @@ Titles = {
     'FILENAME': {'fa': 'نام فایل',
             'en': 'File Name'},  
 
-    'OPERATION': {'fa': 'عمل',
+    'OPERATION': {'fa': 'عملیات',
             'en': 'Operation'},  
 
-    'STATE': {'fa': 'حالت',
+    'STATE': {'fa': 'وضعیت',
             'en': 'State'}, 
 
     'START': {'fa': 'شروع',
             'en': 'Start'},
 
-    'MAX_CLEANUP_PERCENTAGE': {'fa': ':حد بالای حافظه',
+    'STORAGE_UPPER_LIMIT': {'fa': ':حد بالای حافظه',
             'en': 'Storage upper limit:'},
 
-    'MIN_CLEANUP_PERCENTAGE': {'fa': ':حد پایین حافظه',
+    'STORAGE_LOWER_LIMIT': {'fa': ':حد پایین حافظه',
             'en': 'Storage lower limit'},
 
     'UPDATE_TIME': {'fa': ':نرخ به‌روز‌رسانی',

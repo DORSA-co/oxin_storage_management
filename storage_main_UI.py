@@ -49,7 +49,7 @@ class storage_management(QMainWindow, ui):
         self.create_images_charts()
         self.create_datasets_charts()
 
-        self.set_language('fa')
+        # self.set_language('fa')
 
     def set_language(self, lang):
         self.language = lang
@@ -78,8 +78,8 @@ class storage_management(QMainWindow, ui):
         self.revert_settings_btn.setText(texts.Titles['REVERT'][self.language])
 
     def set_labels_text(self):
-        self.max_percent_label.setText(texts.Titles['MAX_CLEANUP_PERCENTAGE'][self.language])
-        self.min_percent_label.setText(texts.Titles['MIN_CLEANUP_PERCENTAGE'][self.language])
+        self.max_percent_label.setText(texts.Titles['STORAGE_UPPER_LIMIT'][self.language])
+        self.min_percent_label.setText(texts.Titles['STORAGE_LOWER_LIMIT'][self.language])
         self.update_time_label.setText(texts.Titles['UPDATE_TIME'][self.language])
         self.minutes_label.setText(texts.Titles['MINUTES'][self.language])
         self.ssd_image_path_label.setText(texts.Titles['SSD_IMAGES_PATH'][self.language])
@@ -91,7 +91,7 @@ class storage_management(QMainWindow, ui):
             self.max_percent_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             self.min_percent_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             self.update_time_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            self.update_time_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.minutes_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             self.ssd_image_path_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             self.ssd_ds_path_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             self.hdd_path_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
@@ -100,7 +100,7 @@ class storage_management(QMainWindow, ui):
             self.max_percent_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.min_percent_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.update_time_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-            self.update_time_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.minutes_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.ssd_image_path_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.ssd_ds_path_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             self.hdd_path_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
@@ -367,9 +367,9 @@ class storage_management(QMainWindow, ui):
         icon_path = os.path.join(ICON_MAIN_PATH, icon_name)
         obj.setIcon(QPixmap(icon_path))
 
-    def set_settings(self, max_cleanup_percentage, min_cleanup_percentage, update_time, ssd_images_path, ssd_datasets_path, hdd_path):
-        self.max_percent_spinBox.setValue(int(max_cleanup_percentage))
-        self.min_percent_spinBox.setValue(int(min_cleanup_percentage))
+    def set_settings(self, storage_upper_limit, storage_lower_limit, update_time, ssd_images_path, ssd_datasets_path, hdd_path):
+        self.max_percent_spinBox.setValue(int(storage_upper_limit))
+        self.min_percent_spinBox.setValue(int(storage_lower_limit))
         self.update_time_spinBox.setValue(int(update_time))
 
         self.ssd_image_path_lineEdit.setText(ssd_images_path)
