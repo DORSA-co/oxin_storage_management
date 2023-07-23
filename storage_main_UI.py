@@ -70,12 +70,73 @@ class storage_management(QMainWindow, ui):
         # self.create_images_charts()
         # self.create_datasets_charts()
 
-    # def showEvent(self, event):
-    #     print('showwwww')
-    #     return super().showEvent(event)
+        # self.set_language('fa')
+
+    def set_language(self, lang):
+        self.language = lang
+        self.set_chart_titles()
+        self.set_table_headers()
+        self.set_buttons_title()
+        self.set_labels_text()
+        self.set_labels_alignment()
+        self.set_tooltips()
+
+    def set_chart_titles(self):
+       self.image_chart.set_title(title=texts.Titles['IMAGES'][self.language]) 
+       self.ds_chart.set_title(title=texts.Titles['DATASETS'][self.language]) 
+
+    def set_table_headers(self):
+        self.report_table.horizontalHeader().setVisible(True)
+        self.report_table.setHorizontalHeaderLabels([texts.Titles['FILENAME'][self.language], 
+                                                        texts.Titles['OPERATION'][self.language], 
+                                                        texts.Titles['STATE'][self.language]]
+                                                    )
+
+    def set_buttons_title(self):
+        self.start_btn.setText(texts.Titles['START'][self.language])
+        self.advance_settings_btn.setText(texts.Titles['ADVANCE'][self.language])
+        self.apply_settings_btn.setText(texts.Titles['APPLY'][self.language])
+        self.revert_settings_btn.setText(texts.Titles['REVERT'][self.language])
+
+    def set_labels_text(self):
+        self.max_percent_label.setText(texts.Titles['STORAGE_UPPER_LIMIT'][self.language])
+        self.min_percent_label.setText(texts.Titles['STORAGE_LOWER_LIMIT'][self.language])
+        self.update_time_label.setText(texts.Titles['UPDATE_TIME'][self.language])
+        self.minutes_label.setText(texts.Titles['MINUTES'][self.language])
+        self.ssd_image_path_label.setText(texts.Titles['SSD_IMAGES_PATH'][self.language])
+        self.ssd_ds_path_label.setText(texts.Titles['SSD_DATASETS_PATH'][self.language])
+        self.hdd_path_label.setText(texts.Titles['HDD_PATH'][self.language])
+
+    def set_labels_alignment(self):
+        if self.language == 'fa':
+            self.max_percent_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.min_percent_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.update_time_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.minutes_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.ssd_image_path_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.ssd_ds_path_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.hdd_path_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            
+        else:
+            self.max_percent_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.min_percent_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.update_time_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.minutes_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.ssd_image_path_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.ssd_ds_path_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.hdd_path_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
+    def set_tooltips(self):
+        self.main_page_btn.setToolTip(texts.Titles['HOME'][self.language])
+        self.report_page_btn.setToolTip(texts.Titles['REPORT'][self.language])
+        self.settings_btn.setToolTip(texts.Titles['SETTINGS'][self.language])
+
+        self.ssd_image_path_btn.setToolTip(texts.Titles['SELECT_FOLDER'][self.language])
+        self.ssd_ds_path_btn.setToolTip(texts.Titles['SELECT_FOLDER'][self.language])
+        self.hdd_path_btn.setToolTip(texts.Titles['SELECT_FOLDER'][self.language])
 
     def create_images_charts(self):
-        self.image_chart = SmartChart(title="Images")
+        self.image_chart = SmartChart(title=texts.Titles['IMAGES'][self.language])
         self.image_chart_view = SimpleChartView(self.image_chart)
 
         bpievbox = QVBoxLayout()
@@ -84,6 +145,8 @@ class storage_management(QMainWindow, ui):
         
         self.images_chart_frame.setLayout(bpievbox)
         self.images_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
+
+        self.set_animation_images_chart(False)
 
     def update_images_chart(self, input_info):
         # input_info = {'SSD': {'Used':100, 'Free': 200}, 'HDD': {'Used': 300, 'Free': 50}}
@@ -98,8 +161,11 @@ class storage_management(QMainWindow, ui):
     def clear_images_chart(self):
         self.image_chart.clear()
 
+    def set_animation_images_chart(self, value):
+        self.image_chart.set_animation(value)
+
     def create_datasets_charts(self):
-        self.ds_chart = SimpleChart(title="Datasets")
+        self.ds_chart = SimpleChart(title=texts.Titles['DATASETS'][self.language])
         self.ds_chart_view = SimpleChartView(self.ds_chart)
 
         bpievbox = QVBoxLayout()
@@ -108,6 +174,8 @@ class storage_management(QMainWindow, ui):
         
         self.datasets_chart_frame.setLayout(bpievbox)
         self.datasets_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
+
+        self.set_animation_datasets_chart(False)
 
     def update_datasets_chart(self, free_space, files):
         # input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
@@ -127,6 +195,9 @@ class storage_management(QMainWindow, ui):
 
     def clear_datasets_chart(self):
         self.ds_chart.clear()
+
+    def set_animation_datasets_chart(self, value):
+        self.ds_chart.set_animation(value)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -270,6 +341,7 @@ class storage_management(QMainWindow, ui):
     def clear_table(self):
         self.report_table.clear()
         self.report_table.setRowCount(0)
+        self.set_table_headers()
 
     def show_hide_advance_settings(self):
         h = self.advance_frame.height()
@@ -316,9 +388,9 @@ class storage_management(QMainWindow, ui):
         icon_path = os.path.join(ICON_MAIN_PATH, icon_name)
         obj.setIcon(QPixmap(icon_path))
 
-    def set_settings(self, max_cleanup_percentage, min_cleanup_percentage, update_time, ssd_images_path, ssd_datasets_path, hdd_path):
-        self.max_percent_spinBox.setValue(int(max_cleanup_percentage))
-        self.min_percent_spinBox.setValue(int(min_cleanup_percentage))
+    def set_settings(self, storage_upper_limit, storage_lower_limit, update_time, ssd_images_path, ssd_datasets_path, hdd_path):
+        self.max_percent_spinBox.setValue(int(storage_upper_limit))
+        self.min_percent_spinBox.setValue(int(storage_lower_limit))
         self.update_time_spinBox.setValue(int(update_time))
 
         self.ssd_image_path_lineEdit.setText(ssd_images_path)
@@ -337,6 +409,13 @@ class storage_management(QMainWindow, ui):
             dname = select_path_dialog.selectedFiles()[0]
             return dname
         return ''
+
+    def update_scrollbar(self, row):
+        table_height = self.report_table.height()
+        row_height = self.report_table.verticalHeader().sectionSize(0)
+        if row*row_height > table_height: 
+            x = self.report_table.verticalScrollBar().value() + row_height
+            self.report_table.verticalScrollBar().setValue(x)
 
 if __name__ == "__main__":
     app = QApplication()

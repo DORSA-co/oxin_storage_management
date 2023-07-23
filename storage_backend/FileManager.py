@@ -264,7 +264,7 @@ class Scanner:
             sub_paths = Manager.get_sub_paths(main_path, folder_only=False)
 
         #-----------------------
-        if sorting_func:
+        if sub_paths and sorting_func:
             sub_paths = sorting_func(sub_paths)
         #-----------------------
         for path in sub_paths:

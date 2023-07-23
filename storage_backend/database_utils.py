@@ -44,13 +44,13 @@ class dataBaseUtils:
             # Log Exception
             return False, settings
 
-    def set_storage_setting(self, max_cleanup_percentage, min_cleanup_percentage, update_time, ssd_image_path, ssd_dataset_path, hdd_path):
+    def set_storage_setting(self, storage_upper_limit, storage_lower_limit, update_time, ssd_image_path, ssd_dataset_path, hdd_path):
         """This function set settings in database table
 
-        :param max_cleanup_percentage: maximum percentage to cleanup.
-        :type max_cleanup_percentage: int
-        :param min_cleanup_percentage: minimum percentage to cleanup.
-        :type min_cleanup_percentage: int
+        :param storage_upper_limit: maximum percentage to cleanup.
+        :type storage_upper_limit: int
+        :param storage_lower_limit: minimum percentage to cleanup.
+        :type storage_lower_limit: int
         :param ssd_image_path: path of images partition of ssd.
         :type ssd_image_path: str
         :param ssd_dataset_path: path of datasets partition of ssd.
@@ -60,8 +60,8 @@ class dataBaseUtils:
         :return: True if all settings update successfully. False otherwise.
         :rtype: bool
         """
-        res1 = self.db.update_record(self.storage_settings, "max_cleanup_percentage", str(max_cleanup_percentage), "id", "1")
-        res2 = self.db.update_record(self.storage_settings, "min_cleanup_percentage", str(min_cleanup_percentage), "id", "1")
+        res1 = self.db.update_record(self.storage_settings, "storage_upper_limit", str(storage_upper_limit), "id", "1")
+        res2 = self.db.update_record(self.storage_settings, "storage_lower_limit", str(storage_lower_limit), "id", "1")
         res3 = self.db.update_record(self.storage_settings, "update_time", str(update_time), "id", "1")
         res4 = self.db.update_record(self.storage_settings, "ssd_images_path", str(ssd_image_path), "id", "1")
         res5 = self.db.update_record(self.storage_settings, "ssd_datasets_path", str(ssd_dataset_path), "id", "1")
