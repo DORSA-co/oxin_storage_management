@@ -27,7 +27,7 @@ class storage_api():
         self.hdd_sheet_should_clean = []
         self.filters = []
 
-        # self.start()
+        self.start()
 
         # self.create_charts_timer()
         # self.create_disks_timer()
@@ -163,6 +163,8 @@ class storage_api():
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
 
             self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
+            # if self.ssd_sheet_should_clean:
+            #     self.ssd_sheet_should_clean.pop()
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
 
             free_hdd = self.hdd_file_manager.free.toBytes()

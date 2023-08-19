@@ -49,6 +49,7 @@ class storage_management(QMainWindow, ui):
     x=0
 
     def __init__(self):
+        
         super(storage_management, self).__init__()
         self.setupUi(self)
         flags = Qt.WindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
@@ -67,8 +68,8 @@ class storage_management(QMainWindow, ui):
         self.storage_color = {'HDD': '#ff007f', 'SSD': '#55aaff'}
         self.used_free_color = {'Used': '#ff0000', 'Free': '#4dbf4d'}
 
-        # self.create_images_charts()
-        # self.create_datasets_charts()
+        self.create_images_charts()
+        self.create_datasets_charts()
 
         # self.set_language('fa')
 

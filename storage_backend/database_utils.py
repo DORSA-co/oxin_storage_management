@@ -70,7 +70,7 @@ class dataBaseUtils:
         return res1 and res2 and res3 and res4 and res5 and res6
 
     def change_sheet_main_path(self, new_main_path, sheet_id):
-        res = self.db.update_record(self.sheets_info, "main_path", str(new_main_path), "sheet_id", sheet_id)
+        res = self.db.update_record(self.sheets_info, "main_path", str(new_main_path), "PLATE_ID", sheet_id)
         return res
 
 
