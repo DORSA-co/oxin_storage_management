@@ -39,7 +39,7 @@ class storage_management(QMainWindow, ui):
         self.activate_()
         self.center()
         self._old_pos = None
-        self.stackedWidget.setCurrentIndex(0)
+        self.show_main_page()
 
         self.language = 'en'
 
@@ -197,9 +197,9 @@ class storage_management(QMainWindow, ui):
         self.mini_button.clicked.connect(self.minimize)
         self.maxi_button.clicked.connect(self.maxmize_minimize)
 
-        self.main_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.main_page))
-        self.report_page_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.report_page))
-        self.settings_btn.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.settings_page))
+        self.main_page_btn.clicked.connect(self.show_main_page)
+        self.report_page_btn.clicked.connect(self.show_report_page)
+        self.settings_btn.clicked.connect(self.show_settings_page)
         self.stackedWidget.currentChanged.connect(self.change_left_btns)
         self.advance_settings_btn.clicked.connect(self.show_hide_advance_settings)
         self.ssd_image_path_btn.clicked.connect(lambda: self.browse(self.ssd_image_path_lineEdit))
@@ -239,8 +239,14 @@ class storage_management(QMainWindow, ui):
             self.report_page_btn.setStyleSheet('')
             self.settings_btn.setStyleSheet('background-color: rgb(90, 83, 145);')
 
+    def show_main_page(self):
+        self.stackedWidget.setCurrentWidget(self.main_page)
+
     def show_report_page(self):
         self.stackedWidget.setCurrentWidget(self.report_page)
+
+    def show_settings_page(self):
+        self.stackedWidget.setCurrentWidget(self.settings_page)
     
     def set_warning(self, label_obj, text, level=1):
         """Show warning with time delay 2 second , all labels for show warning has been set here"""

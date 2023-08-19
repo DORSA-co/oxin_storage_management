@@ -196,7 +196,7 @@ class dataBase:
             mySql_insert_query = """UPDATE {} 
                                     SET {} = {}
                                     WHERE {} ={} """.format(table_name,col_name,("'"+value+"'"),id_name,("'"+id_value+"'"))
-            ##print(mySql_insert_query)
+            # print(mySql_insert_query)
             cursor.execute(mySql_insert_query)
             # mySql_insert_query=(mySql_insert_query,data)
             # self.execute_quary(mySql_insert_query, cursor, connection, close=False,need_data=True )

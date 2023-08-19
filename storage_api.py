@@ -28,8 +28,8 @@ class storage_api():
         self.filters = []
 
         # self.start()
-
-        # self.create_charts_timer()
+        self.update_charts()
+        self.create_charts_timer()
         # self.create_disks_timer()
         
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
@@ -161,24 +161,27 @@ class storage_api():
                                                                     FileManager.Space(clean_space_ssd),
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
-
-            self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
+            
+            # self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
+            print('ssd_sheet_should_clean: ', self.ssd_sheet_should_clean)
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
 
             free_hdd = self.hdd_file_manager.free.toBytes()
-
+            print('ssd_space_needed: ', ssd_space_needed.toBytes(), 'free_hdd: ', free_hdd)
             if ssd_space_needed.toBytes() > free_hdd:
                 self.hdd_sheet_should_clean, hdd_flag, hdd_space_needed = self.fm.scan.scan_size_limit(self.settings['hdd_path'],
                                                                     FileManager.Space(clean_space_ssd - free_hdd),
                                                                     depth=3, 
                                                                     sorting_func= self.fm.sort.sort_by_creationtime)
                 self.ui.insert_into_table(self.hdd_sheet_should_clean, 'Delete', '-')
+                print('hdd_sheet_should_clean: ', self.hdd_sheet_should_clean)
         self.ui.show_report_page()
             
     def start_cleaning(self):
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
+                print('hdd file name: ', file.name())
                 self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
                 self.fm.action.delete(file.path())
@@ -186,13 +189,17 @@ class storage_api():
                 self.s_worker.update_charts.emit()
 
         self.hdd_sheet_should_clean = []
-
+        
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
+                print('ssd file name: ', file.name())
                 self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
+                print('start moving')
                 path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
+                print('finish move')
                 # path = os.path.join( path, file.name())
+                print('update db')
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
                 self.s_worker.update_charts.emit()
@@ -211,7 +218,7 @@ class storage_api():
         self.s_thread.started.connect(self.s_worker.run)
 
         self.s_worker.finished.connect(self.s_thread.quit)
-        self.s_worker.finished.connect(self.ui.close_win)
+        # self.s_worker.finished.connect(self.ui.close_win)
         self.s_worker.finished.connect(self.s_worker.deleteLater)
 
         self.s_thread.finished.connect(self.s_thread.deleteLater)
@@ -226,7 +233,11 @@ class storage_api():
         # self.set_charts_animation(True)
         self.ssd_image_file_manager.refresh()
         self.hdd_file_manager.refresh()
+        print('refresh file managers')
         self.update_charts()
+        print('update charts')
         self.check_disks()
+        print('check disks')
         # self.set_charts_animation(False)
         self.start_cleaning_thread()
+        print('start_cleaning_thread') 

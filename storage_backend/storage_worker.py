@@ -18,7 +18,9 @@ class storage_worker(sQObject):
 
     def run(self):
         try:
+            print('start cleaning in thread')
             self.s_api.start_cleaning()
+            print('finish cleaning in thread')
             self.finished.emit()
         except:
             self.finished.emit()
