@@ -27,9 +27,9 @@ class storage_api():
         self.hdd_sheet_should_clean = []
         self.filters = []
 
-        # self.start()
-        self.update_charts()
-        self.create_charts_timer()
+        self.start()
+
+        # self.create_charts_timer()
         # self.create_disks_timer()
         
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
@@ -161,9 +161,10 @@ class storage_api():
                                                                     FileManager.Space(clean_space_ssd),
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
-            
-            # self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
-            print('ssd_sheet_should_clean: ', self.ssd_sheet_should_clean)
+
+            self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
+            # if self.ssd_sheet_should_clean:
+            #     self.ssd_sheet_should_clean.pop()
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
 
             free_hdd = self.hdd_file_manager.free.toBytes()
@@ -196,8 +197,11 @@ class storage_api():
                 self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
                 self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
                 print('start moving')
-                path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
-                print('finish move')
+                try:
+                    path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
+                    print('finish move')
+                except Exception as e:
+                    print(e)
                 # path = os.path.join( path, file.name())
                 print('update db')
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
@@ -218,7 +222,7 @@ class storage_api():
         self.s_thread.started.connect(self.s_worker.run)
 
         self.s_worker.finished.connect(self.s_thread.quit)
-        # self.s_worker.finished.connect(self.ui.close_win)
+        self.s_worker.finished.connect(self.ui.close_win)
         self.s_worker.finished.connect(self.s_worker.deleteLater)
 
         self.s_thread.finished.connect(self.s_thread.deleteLater)
