@@ -1,9 +1,12 @@
 import sys
 import os
-from PySide6.QtWidgets import *
-from PySide6.QtCharts import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+# from PySide6.QtWidgets import *
+# from PySide6.QtCharts import *
+# from PySide6.QtCore import *
+# from PySide6.QtGui import *
+# from PyQt5.QtWidgets import * 
+# from PyQt5.QtGui import * 
+# from PyQt5.QtGui import *
 from PySide6.QtUiTools import loadUiType
 from storage_backend import texts, color
 # from storage_backend import chart_funcs
@@ -11,6 +14,24 @@ from storage_backend.chart_funcs import SimpleChart, SmartChart, SimpleChartView
 from storage_backend.FileDialog import FileDialog
 from storage_api import storage_api
 import storage_resources_rc
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore as sQtCore
+from PyQt5.QtWidgets import * 
+from PyQt5.QtGui import * 
+from PyQt5.QtGui import *
+from pyparsing import col
+# from pyqt5_plugins import *
+from PySide6.QtCharts import *
+from PySide6.QtCore import *
+from PySide6.QtUiTools import loadUiType
+from PySide6.QtWidgets import *
+from PySide6.QtGui import QImage as sQImage
+from PySide6.QtGui import QPixmap as sQPixmap
+from PyQt5.QtGui import QPainter
+
+
 
 ui, _ = loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), "storage_UI/storage_main.ui"))
 os.environ["QT_FONT_DPI"] = "96" # FIX Problem for High DPI and Scale above 100%
@@ -49,7 +70,7 @@ class storage_management(QMainWindow, ui):
         self.create_images_charts()
         self.create_datasets_charts()
 
-        # self.set_language('fa')
+        self.set_language('fa')
 
     def set_language(self, lang):
         self.language = lang
@@ -125,7 +146,7 @@ class storage_management(QMainWindow, ui):
         self.images_chart_frame.setLayout(bpievbox)
         self.images_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.set_animation_images_chart(False)
+        self.set_animation_images_chart(True)
 
     def update_images_chart(self, input_info):
         # input_info = {'SSD': {'Used':100, 'Free': 200}, 'HDD': {'Used': 300, 'Free': 50}}
@@ -154,7 +175,7 @@ class storage_management(QMainWindow, ui):
         self.datasets_chart_frame.setLayout(bpievbox)
         self.datasets_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.set_animation_datasets_chart(False)
+        self.set_animation_datasets_chart(True)
 
     def update_datasets_chart(self, free_space, files):
         # input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
