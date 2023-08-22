@@ -69,7 +69,7 @@ class SimpleChart(QtCharts.QChart):
         slice_.setColor(QtGui.QColor(color))
         slice_.setLabelBrush(QtGui.QColor(color))
 
-        # slice_.hovered.connect(lambda is_hovered: self.__explode(slice_, is_hovered))
+        slice_.hovered.connect(lambda is_hovered: self.__explode(slice_, is_hovered))
         # slice_.percentageChanged.connect(lambda: self.__update_label(slice_, name))
 
         self.__series.append(slice_)
@@ -184,7 +184,7 @@ class SmartChart(QtCharts.QChart):
         outer_slice.setColor(QtGui.QColor(color))
         outer_slice.setLabelBrush(QtGui.QColor(color))
 
-        # outer_slice.hovered.connect(lambda is_hovered: self.__explode(outer_slice, is_hovered))
+        outer_slice.hovered.connect(lambda is_hovered: self.__explode(outer_slice, is_hovered))
         outer_slice.percentageChanged.connect(lambda: self.__update_label_outer(outer_slice, name))
 
         self.__outer.append(outer_slice)

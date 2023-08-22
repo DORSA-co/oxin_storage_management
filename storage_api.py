@@ -1,15 +1,26 @@
+from PySide6.QtCore import QObject
+from PySide6.QtCore import Signal
 from storage_backend import FileManager
 import os
 from PySide6.QtCore import *
 from PySide6.QtCore import QTimer, QThread
 from storage_backend import database_utils, texts, storage_worker
+import dorsa_datetime
+
+import threading
 
 
-CHART_UPDATE_TIME = 15
+CHART_UPDATE_TIME = 5
 DISKS_CHECK_TIME = 60
 
-class storage_api():
+class storage_api(QObject):
+    finished = Signal()
+    update_table_status_signal = Signal(int, str)
+    update_charts_signal = Signal()
+    update_scrollbar_signal = Signal(int)
+
     def __init__(self, ui):
+        super(storage_api, self).__init__()
         self.ui = ui
         
         self.db = database_utils.dataBaseUtils()
@@ -25,15 +36,21 @@ class storage_api():
 
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
-        self.filters = []
 
         self.start()
 
-        # self.create_charts_timer()
-        # self.create_disks_timer()
+        self.create_charts_timer()
         
         self.ui.apply_settings_btn.clicked.connect(self.apply_settings)
         self.ui.revert_settings_btn.clicked.connect(self.read_settings_from_db)
+
+        # self.thread.finished.connect(self.thread.deleteLater)
+        # self.finished.connect(self.thread.quit)
+        self.finished.connect(self.ui.close_win)
+
+        self.update_table_status_signal.connect(self.ui.change_table_status)
+        self.update_charts_signal.connect(self.update_charts)
+        self.update_scrollbar_signal.connect(self.ui.update_scrollbar)
 
     def read_settings_from_db(self):
         res, settings = self.db.load_storage_setting()
@@ -144,12 +161,6 @@ class storage_api():
         self.ui.clear_datasets_chart()
         self.ui.update_datasets_chart(free, files)
 
-    def add_filter(self, filter):
-        self.filters.append(filter)
-
-    def clear_filters(self):
-        self.filters = []
-
     def check_disks(self):
         self.ui.clear_table()
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
@@ -162,7 +173,6 @@ class storage_api():
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
 
-            self.ssd_sheet_should_clean = list(filter(lambda x: x not in self.filters, self.ssd_sheet_should_clean))
             # if self.ssd_sheet_should_clean:
             #     self.ssd_sheet_should_clean.pop()
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
@@ -182,66 +192,66 @@ class storage_api():
         selected_file_names = self.ui.get_table_checked_items()
         for file in self.hdd_sheet_should_clean:
             if file.name() in selected_file_names:
-                print('hdd file name: ', file.name())
-                self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
-                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
+                self.update_scrollbar_signal.emit(selected_file_names[file.name()])
+                self.update_table_status_signal.emit(selected_file_names[file.name()], 'Doing...')
                 self.fm.action.delete(file.path())
-                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
-                self.s_worker.update_charts.emit()
+                self.update_table_status_signal.emit(selected_file_names[file.name()], 'Done')
 
         self.hdd_sheet_should_clean = []
         
         for file in self.ssd_sheet_should_clean:
             if file.name() in selected_file_names:
-                print('ssd file name: ', file.name())
-                self.s_worker.update_scrollbar.emit(selected_file_names[file.name()])
-                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Doing...')
-                print('start moving')
-                try:
-                    path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
-                    print('finish move')
-                except Exception as e:
-                    print(e)
+                print(file.name())
+                self.update_scrollbar_signal.emit(selected_file_names[file.name()])
+                self.update_table_status_signal.emit(selected_file_names[file.name()], 'Doing...')
+                path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
                 # path = os.path.join( path, file.name())
                 print('update db')
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
-                self.s_worker.update_table_status.emit(selected_file_names[file.name()], 'Done')
-                self.s_worker.update_charts.emit()
+                self.update_table_status_signal.emit(selected_file_names[file.name()], 'Done')
+                # self.update_charts_signal.emit()
 
         self.ssd_sheet_should_clean = []
-        
+        print('finished')
+        self.finished.emit()
+
     def start_cleaning_thread(self):
-        self.s_thread = QThread()
-        self.s_worker = storage_worker.storage_worker()
-        self.s_worker.assign_parameters(
-            storage_api_obj = self
-        )
+        # self.thread = QThread()
+        # self.moveToThread(self.thread)
+        # self.thread.started.connect(self.start_cleaning)
+        # self.thread.start()
 
-        self.s_worker.moveToThread(self.s_thread)
+        self.thread = threading.Thread(target=self.start_cleaning)
+        self.thread.start()
         
-        self.s_thread.started.connect(self.s_worker.run)
+    # def start_cleaning_thread(self):
+    #     self.s_thread = QThread()
+    #     self.s_worker = storage_worker.storage_worker()
+    #     self.s_worker.assign_parameters(
+    #         storage_api_obj = self
+    #     )
 
-        self.s_worker.finished.connect(self.s_thread.quit)
-        self.s_worker.finished.connect(self.ui.close_win)
-        self.s_worker.finished.connect(self.s_worker.deleteLater)
+    #     self.s_worker.moveToThread(self.s_thread)
+        
+    #     self.s_thread.started.connect(self.s_worker.run)
 
-        self.s_thread.finished.connect(self.s_thread.deleteLater)
+    #     self.s_worker.finished.connect(self.s_thread.quit)
+    #     # self.s_worker.finished.connect(self.ui.close_win)
+    #     self.s_worker.finished.connect(self.s_worker.deleteLater)
+
+    #     self.s_thread.finished.connect(self.s_thread.deleteLater)
         
-        self.s_worker.update_table_status.connect(self.ui.change_table_status)
-        self.s_worker.update_charts.connect(self.update_charts)
-        self.s_worker.update_scrollbar.connect(self.ui.update_scrollbar)
+    #     self.s_worker.update_table_status.connect(self.ui.change_table_status)
+    #     self.s_worker.update_charts.connect(self.update_charts)
+    #     self.s_worker.update_scrollbar.connect(self.ui.update_scrollbar)
         
-        self.s_thread.start()
+    #     self.s_thread.start()
 
     def start(self):
-        # self.set_charts_animation(True)
         self.ssd_image_file_manager.refresh()
         self.hdd_file_manager.refresh()
         print('refresh file managers')
         self.update_charts()
         print('update charts')
         self.check_disks()
-        print('check disks')
-        # self.set_charts_animation(False)
         self.start_cleaning_thread()
-        print('start_cleaning_thread') 

@@ -49,7 +49,6 @@ class storage_management(QMainWindow, ui):
     x=0
 
     def __init__(self):
-        
         super(storage_management, self).__init__()
         self.setupUi(self)
         flags = Qt.WindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
@@ -71,7 +70,7 @@ class storage_management(QMainWindow, ui):
         self.create_images_charts()
         self.create_datasets_charts()
 
-        # self.set_language('fa')
+        self.set_language('fa')
 
     def set_language(self, lang):
         self.language = lang
@@ -147,7 +146,7 @@ class storage_management(QMainWindow, ui):
         self.images_chart_frame.setLayout(bpievbox)
         self.images_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.set_animation_images_chart(False)
+        self.set_animation_images_chart(True)
 
     def update_images_chart(self, input_info):
         # input_info = {'SSD': {'Used':100, 'Free': 200}, 'HDD': {'Used': 300, 'Free': 50}}
@@ -176,7 +175,7 @@ class storage_management(QMainWindow, ui):
         self.datasets_chart_frame.setLayout(bpievbox)
         self.datasets_chart_frame.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.set_animation_datasets_chart(False)
+        self.set_animation_datasets_chart(True)
 
     def update_datasets_chart(self, free_space, files):
         # input_info = {'ds1':100, 'ds2': 200, 'ds3': 50}
