@@ -128,6 +128,9 @@ class File:
     
     def path(self) -> str :
         return self.__path__
+    
+    def creatoin_time(self,) -> datetime:
+        return datetime.fromtimestamp(os.path.getctime(self.path()))
 
 #____________________________________________________________________________________________________________________________________
 #
@@ -203,14 +206,14 @@ class FileSort:
     @staticmethod
     def sort_by_creationtime(li: list[File], low_to_high=False):
         if isinstance( li[0], File):
-            li.sort( key=lambda x:datetime.fromtimestamp(os.path.getctime(x.path)), reverse = low_to_high )
+            li.sort( key= lambda x:x.creatoin_time(), reverse=low_to_high)
         if isinstance( li[0], str):
             li.sort( key=lambda x:datetime.fromtimestamp(os.path.getctime(x)), reverse = low_to_high )
         return li
 
     def sort_by_name(li: list[File], low_to_high=False):
         if isinstance( li[0], File):
-            li.sort( key=lambda x:os.path.basename(x.path), reverse = low_to_high )
+            li.sort( key=lambda x:x.name(), reverse = low_to_high )
         if isinstance( li[0], str):
             li.sort( key=lambda x:os.path.basename(x), reverse = low_to_high )
         
@@ -358,6 +361,7 @@ class FileManager:
 
                 
 if __name__ == '__main__':
+    f = File('C:/Users/amir/Desktop/oxin_storage_management/storage_backend/FileManager.py', 100)
     print(Manager.replace_path('a/b/c', '\\a/b/', '\m\\'))
     FileAction.shortcut('a', 'test')
     main_path = 'files'
