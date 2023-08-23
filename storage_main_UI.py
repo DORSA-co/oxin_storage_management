@@ -1,12 +1,6 @@
 import sys
 import os
-# from PySide6.QtWidgets import *
-# from PySide6.QtCharts import *
-# from PySide6.QtCore import *
-# from PySide6.QtGui import *
-# from PyQt5.QtWidgets import * 
-# from PyQt5.QtGui import * 
-# from PyQt5.QtGui import *
+from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import loadUiType
 from storage_backend import texts, color
 # from storage_backend import chart_funcs
@@ -70,7 +64,7 @@ class storage_management(QMainWindow, ui):
         self.create_images_charts()
         self.create_datasets_charts()
 
-        self.set_language('fa')
+        # self.set_language('fa')
 
     def set_language(self, lang):
         self.language = lang
@@ -427,5 +421,9 @@ if __name__ == "__main__":
     app = QApplication()
     win = storage_management()
     api = storage_api(win)
+    if len(sys.argv) > 2:
+        win.set_language(sys.argv[1])
+        if sys.argv[2]=='True':
+            api.start()
     win.show()
     sys.exit(app.exec())

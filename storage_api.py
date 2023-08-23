@@ -5,7 +5,7 @@ import os
 from PySide6.QtCore import *
 from PySide6.QtCore import QTimer, QThread
 from storage_backend import database_utils, texts, storage_worker
-import dorsa_datetime
+import cv2
 
 import threading
 
@@ -16,7 +16,6 @@ DISKS_CHECK_TIME = 60
 class storage_api(QObject):
     finished = Signal()
     update_table_status_signal = Signal(int, str)
-    update_charts_signal = Signal()
     update_scrollbar_signal = Signal(int)
 
     def __init__(self, ui):
@@ -37,7 +36,7 @@ class storage_api(QObject):
         self.ssd_sheet_should_clean = []
         self.hdd_sheet_should_clean = []
 
-        self.start()
+        # self.start()
 
         self.create_charts_timer()
         
@@ -49,7 +48,6 @@ class storage_api(QObject):
         self.finished.connect(self.ui.close_win)
 
         self.update_table_status_signal.connect(self.ui.change_table_status)
-        self.update_charts_signal.connect(self.update_charts)
         self.update_scrollbar_signal.connect(self.ui.update_scrollbar)
 
     def read_settings_from_db(self):
@@ -125,6 +123,7 @@ class storage_api(QObject):
                                 level=1)
 
     def create_charts_timer(self):
+        self.update_charts()
         self.update_charts_timer = QTimer()
         self.update_charts_timer.timeout.connect(self.update_charts)
         self.update_charts_timer.start(CHART_UPDATE_TIME*60*1000)
@@ -173,19 +172,20 @@ class storage_api(QObject):
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
 
-            # if self.ssd_sheet_should_clean:
-            #     self.ssd_sheet_should_clean.pop()
+            self.ssd_sheet_should_clean = FileManager.FileSort.sort_by_creationtime(self.ssd_sheet_should_clean)
+            if self.ssd_sheet_should_clean:
+                self.ssd_sheet_should_clean.pop()
+            # for file in self.ssd_sheet_should_clean:
+            #     print(file.name(), file.creatoin_time())
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
 
             free_hdd = self.hdd_file_manager.free.toBytes()
-            print('ssd_space_needed: ', ssd_space_needed.toBytes(), 'free_hdd: ', free_hdd)
             if ssd_space_needed.toBytes() > free_hdd:
                 self.hdd_sheet_should_clean, hdd_flag, hdd_space_needed = self.fm.scan.scan_size_limit(self.settings['hdd_path'],
                                                                     FileManager.Space(clean_space_ssd - free_hdd),
                                                                     depth=3, 
                                                                     sorting_func= self.fm.sort.sort_by_creationtime)
                 self.ui.insert_into_table(self.hdd_sheet_should_clean, 'Delete', '-')
-                print('hdd_sheet_should_clean: ', self.hdd_sheet_should_clean)
         self.ui.show_report_page()
             
     def start_cleaning(self):
@@ -209,10 +209,10 @@ class storage_api(QObject):
                 print('update db')
                 self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
                 self.update_table_status_signal.emit(selected_file_names[file.name()], 'Done')
-                # self.update_charts_signal.emit()
 
         self.ssd_sheet_should_clean = []
         print('finished')
+        cv2.waitKey(5)
         self.finished.emit()
 
     def start_cleaning_thread(self):
@@ -250,8 +250,5 @@ class storage_api(QObject):
     def start(self):
         self.ssd_image_file_manager.refresh()
         self.hdd_file_manager.refresh()
-        print('refresh file managers')
-        self.update_charts()
-        print('update charts')
         self.check_disks()
         self.start_cleaning_thread()
