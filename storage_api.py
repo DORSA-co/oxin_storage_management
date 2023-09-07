@@ -204,13 +204,19 @@ class storage_api(QObject):
                 print(file.name())
                 self.update_scrollbar_signal.emit(selected_file_names[file.name()])
                 self.update_table_status_signal.emit(selected_file_names[file.name()], 'Doing...')
-                path = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
-                # path = os.path.join( path, file.name())
-                print('update db')
-                self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
-                self.update_table_status_signal.emit(selected_file_names[file.name()], 'Done')
+                res = self.fm.action.move(file.path(), res_path=self.settings['hdd_path'], replace_path=self.settings['ssd_images_path'])
+                if res:
+                    print('update db')
+                    self.db.change_sheet_main_path(self.settings['hdd_path'], file.name())
+                    self.update_table_status_signal.emit(selected_file_names[file.name()], 'Done')
+                else:
+                    self.update_table_status_signal.emit(selected_file_names[file.name()], 'ERROR!!!')
 
         self.ssd_sheet_should_clean = []
+
+        FileManager.Manager.remove_empty_folders(self.settings['ssd_images_path'])
+        FileManager.Manager.remove_empty_folders(self.settings['hdd_images_path'])
+        
         print('finished')
         cv2.waitKey(5)
         self.finished.emit()

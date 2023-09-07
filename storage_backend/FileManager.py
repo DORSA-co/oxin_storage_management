@@ -147,8 +147,12 @@ class FileAction:
             # res_path = os.path.realpath(res_path)
             # res_path = origin_path.replace( replace_path, res_path) 
         Manager.build_dir(res_path)
-        shutil.move(origin_path, res_path)
-        return res_path
+        try:
+            shutil.move(origin_path, res_path)
+        except Exception as e:
+            print(e)
+            return False
+        return True
         
 
     @staticmethod
@@ -254,7 +258,7 @@ class Scanner:
         return self.scan_results
     
 
-    def scan_size_limit(self, main_path, transfer_size: Space, depth, sorting_func=None,extentions=None, reset=True) -> tuple[list[File], bool, Space ]:
+    def scan_size_limit(self, main_path, transfer_size: Space, depth, sorting_func=None, extentions=None, reset=True) -> tuple[list[File], bool, Space ]:
         #if reset is False the new scan results append to previous scans
         if reset:
             self.scan_results =[]
@@ -272,7 +276,7 @@ class Scanner:
         #-----------------------
         for path in sub_paths:
             if depth > 0:
-                self.scan_results, self.flag, self.total_space = self.scan_size_limit(path, transfer_size, depth=depth-1, reset=False)
+                self.scan_results, self.flag, self.total_space = self.scan_size_limit(path, transfer_size, depth=depth-1, sorting_func=sorting_func, reset=False)
                 if self.flag:
                     break
 
@@ -286,7 +290,7 @@ class Scanner:
                     self.flag = True
                     break
         
-        return self.scan_results, self.flag, self.total_space 
+        return self.scan_results, self.flag, self.total_space
 #____________________________________________________________________________________________________________________________________
 #
 #
