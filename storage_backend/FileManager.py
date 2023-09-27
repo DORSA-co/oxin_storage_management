@@ -147,13 +147,32 @@ class FileAction:
             # res_path = os.path.realpath(res_path)
             # res_path = origin_path.replace( replace_path, res_path) 
         Manager.build_dir(res_path)
-        try:
-            shutil.move(origin_path, res_path)
-        except Exception as e:
-            print(e)
-            return False
-        return True
+        is_success = True
+        if os.path.isdir(origin_path):
+            subs = os.listdir(origin_path)
+            for sub in subs:
+                curent_folder = os.path.split(origin_path)[1]
+                status = FileAction.move(
+                             origin_path= os.path.join(origin_path, sub),
+                             res_path= os.path.join(res_path, curent_folder),
+                             replace_path=None
+                         )
+                if not status:
+                    is_success = False
+            
+            return is_success
         
+        else:
+            try:
+                target = os.path.split(origin_path)[1]
+                res_path = os.path.join(res_path, target)
+                shutil.move(origin_path, res_path)
+                
+            except Exception as e:
+                print(e)
+                return False
+            return True
+            
 
     @staticmethod
     def copy(origin_path, res_path, replace_path=None):
@@ -231,6 +250,11 @@ class FileSort:
 
 class Scanner:
     def __init__(self):
+        self.scan_results = []
+        self.total_space = Space(0)
+        self.flag = False
+    
+    def reset(self,):
         self.scan_results = []
         self.total_space = Space(0)
         self.flag = False

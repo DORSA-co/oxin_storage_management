@@ -163,6 +163,7 @@ class storage_api(QObject):
     def check_disks(self):
         self.ui.clear_table()
         ssd_image_percent = self.ssd_image_file_manager.used.toPercent()
+        self.fm.manage.remove_empty_folders(self.settings['ssd_images_path'])
         if ssd_image_percent > self.settings['storage_upper_limit']:
             clean_space_ssd = self.ssd_image_file_manager.total.toBytes() * (ssd_image_percent - self.settings['storage_lower_limit']) / 100
             
@@ -172,11 +173,11 @@ class storage_api(QObject):
                                                                     depth=3, 
                                                                     sorting_func= FileManager.FileManager.sort.sort_by_creationtime)
 
+            self.fm.scan.reset()
+
             self.ssd_sheet_should_clean = FileManager.FileSort.sort_by_creationtime(self.ssd_sheet_should_clean)
             if self.ssd_sheet_should_clean:
                 self.ssd_sheet_should_clean.pop()
-            # for file in self.ssd_sheet_should_clean:
-            #     print(file.name(), file.creatoin_time())
             self.ui.insert_into_table(self.ssd_sheet_should_clean, 'Move', '-')
 
             free_hdd = self.hdd_file_manager.free.toBytes()
@@ -185,6 +186,7 @@ class storage_api(QObject):
                                                                     FileManager.Space(clean_space_ssd - free_hdd),
                                                                     depth=3, 
                                                                     sorting_func= self.fm.sort.sort_by_creationtime)
+                self.fm.scan.reset()
                 self.ui.insert_into_table(self.hdd_sheet_should_clean, 'Delete', '-')
         self.ui.show_report_page()
             
@@ -213,9 +215,8 @@ class storage_api(QObject):
                     self.update_table_status_signal.emit(selected_file_names[file.name()], 'ERROR!!!')
 
         self.ssd_sheet_should_clean = []
-
-        FileManager.Manager.remove_empty_folders(self.settings['ssd_images_path'])
-        FileManager.Manager.remove_empty_folders(self.settings['hdd_images_path'])
+        # FileManager.Manager.remove_empty_folders(self.settings['ssd_images_path'])
+        # FileManager.Manager.remove_empty_folders(self.settings['hdd_path'])
         
         print('finished')
         cv2.waitKey(5)
